@@ -358,6 +358,7 @@ NIO_API int    disp_nifti_1_header(const char * info, const nifti_1_header * hp 
 NIO_API void   nifti_set_debug_level( int level ) ;
 NIO_API void   nifti_set_skip_blank_ext( int skip ) ;
 NIO_API void   nifti_set_allow_upper_fext( int allow ) ;
+NIO_API void   nifti_set_fix_floats( int fix ) ;
 
 NIO_API int    valid_nifti_brick_list( nifti_image * nim , int nbricks,
                                        const int * blist, int disp_error);
@@ -536,6 +537,7 @@ typedef struct {
     int debug;               /*!< debug level for status reports  */
     int skip_blank_ext;      /*!< skip extender if no extensions  */
     int allow_upper_fext;    /*!< allow uppercase file extensions */
+    int fix_floats;          /*!< replace non-finite data with 0  */
 } nifti_global_options;
 
 typedef struct {

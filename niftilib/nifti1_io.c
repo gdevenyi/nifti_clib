@@ -358,7 +358,8 @@ static const char gni_version[] = NIFTI1_IO_SOURCE_VERSION " (16 Jun, 2022)";
 static nifti_global_options g_opts = {
         1, /* debug level                                         */
         0, /* skip_blank_ext    - skip extender if no extensions  */
-        1  /* allow_upper_fext  - allow uppercase file extensions */
+        1, /* allow_upper_fext  - allow uppercase file extensions */
+        1  /* fix_floats        - replace non-finite data with 0  */
 };
 
 /*! global nifti types structure list (per type, ordered oldest to newest) */
@@ -2733,6 +2734,21 @@ void nifti_set_allow_upper_fext( int allow )
 }
 
 /*----------------------------------------------------------------------*/
+/*! set nifti's global fix_floats flag
+
+    When set, nifti_read_buffer() replaces every non-finite value in
+    floating-point and complex data with 0.  Clear it to read NaN and
+    +/-Inf verbatim; they are legal IEEE-754 values and carry meaning in
+    many data sets (e.g. out-of-mask voxels of a statistical map).
+
+    explicitly set to 0 or 1
+*//*--------------------------------------------------------------------*/
+void nifti_set_fix_floats( int fix )
+{
+    g_opts.fix_floats = fix ? 1 : 0;
+}
+
+/*----------------------------------------------------------------------*/
 /*! check current directory for existing header file
 
     \return filename of header on success and NULL if no appropriate file
@@ -5034,6 +5050,7 @@ size_t nifti_read_buffer(znzFile fp, void* dataptr, size_t ntot,
   }
 
 #ifdef isfinite
+if( g_opts.fix_floats )
 {
   /* check input float arrays for goodness, and fix bad floats */
   int fix_count = 0 ;

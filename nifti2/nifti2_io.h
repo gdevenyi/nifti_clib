@@ -512,6 +512,7 @@ NI2_API void   nifti_set_skip_blank_ext( int skip ) ;
 NI2_API void   nifti_set_allow_upper_fext( int allow ) ;
 NI2_API int    nifti_get_alter_cifti( void );
 NI2_API void   nifti_set_alter_cifti( int alter_cifti );
+NI2_API void   nifti_set_fix_floats( int fix ) ;
 
 NI2_API int    nifti_alter_cifti_dims(nifti_image * nim);
 
@@ -720,6 +721,7 @@ typedef struct {
     int skip_blank_ext;      /*!< skip extender if no extensions  */
     int allow_upper_fext;    /*!< allow uppercase file extensions */
     int alter_cifti;         /*!< convert CIFTI dimensions        */
+    int fix_floats;          /*!< replace non-finite data with 0  */
 } nifti_global_options;
 
 typedef struct {
