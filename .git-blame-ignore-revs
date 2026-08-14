@@ -9,4 +9,5 @@
 #
 # GitHub reads this file automatically.
 
-# (the repo-wide clang-format run is appended here by the commit that does it)
+# STYLE: Apply clang-format to the whole tree
+1b30afa035afe507062da2b7bfa7bd2a0e2debe9
