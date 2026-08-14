@@ -20,7 +20,7 @@ typedef struct
   int          xverb;
 } opts_t;
 
-opts_t gopt;
+static opts_t gopt;
 
 
 /* ----------------------------------------------------------------- */
