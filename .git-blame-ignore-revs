@@ -1,0 +1,12 @@
+# Revisions that are pure reformatting and should be skipped when working out
+# who last touched a line.
+#
+# Use it for a single command:
+#     git blame --ignore-revs-file .git-blame-ignore-revs <file>
+#
+# Or configure it once, permanently:
+#     git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# GitHub reads this file automatically.
+
+# (the repo-wide clang-format run is appended here by the commit that does it)

@@ -363,6 +363,7 @@ static nifti_global_options g_opts = {
 };
 
 /*! global nifti types structure list (per type, ordered oldest to newest) */
+/* clang-format off */
 static const nifti_type_ele nifti_type_list[] = {
     /* type  nbyper  swapsize   name  */
     {    0,     0,       0,   "DT_UNKNOWN"              },
@@ -409,6 +410,7 @@ static const nifti_type_ele nifti_type_list[] = {
     { 2304,     4,       0,   "DT_RGBA32"               },
     { 2304,     4,       0,   "NIFTI_TYPE_RGBA32"       },
 };
+/* clang-format on */
 
 /*---------------------------------------------------------------------------*/
 /* prototypes for internal functions - not part of exported library          */
@@ -1681,10 +1683,12 @@ mat44 nifti_mat44_inverse( mat44 R )
 {
    double r11,r12,r13,r21,r22,r23,r31,r32,r33,v1,v2,v3 , deti ;
    mat44 Q ;
+                                                       /* clang-format off */
                                                        /*  INPUT MATRIX IS:  */
    r11 = R.m[0][0]; r12 = R.m[0][1]; r13 = R.m[0][2];  /* [ r11 r12 r13 v1 ] */
    r21 = R.m[1][0]; r22 = R.m[1][1]; r23 = R.m[1][2];  /* [ r21 r22 r23 v2 ] */
    r31 = R.m[2][0]; r32 = R.m[2][1]; r33 = R.m[2][2];  /* [ r31 r32 r33 v3 ] */
+                                                       /* clang-format on */
    v1  = R.m[0][3]; v2  = R.m[1][3]; v3  = R.m[2][3];  /* [  0   0   0   1 ] */
 
    deti = r11*r22*r33-r11*r32*r23-r21*r12*r33
@@ -1808,10 +1812,12 @@ mat33 nifti_mat33_inverse( mat33 R )   /* inverse of 3x3 matrix */
 {
    double r11,r12,r13,r21,r22,r23,r31,r32,r33 , deti ;
    mat33 Q ;
+                                                       /* clang-format off */
                                                        /*  INPUT MATRIX:  */
    r11 = R.m[0][0]; r12 = R.m[0][1]; r13 = R.m[0][2];  /* [ r11 r12 r13 ] */
    r21 = R.m[1][0]; r22 = R.m[1][1]; r23 = R.m[1][2];  /* [ r21 r22 r23 ] */
    r31 = R.m[2][0]; r32 = R.m[2][1]; r33 = R.m[2][2];  /* [ r31 r32 r33 ] */
+                                                       /* clang-format on */
 
    deti = r11*r22*r33-r11*r32*r23-r21*r12*r33
          +r21*r32*r13+r31*r12*r23-r31*r22*r13 ;
@@ -1839,10 +1845,12 @@ mat33 nifti_mat33_inverse( mat33 R )   /* inverse of 3x3 matrix */
 float nifti_mat33_determ( mat33 R )   /* determinant of 3x3 matrix */
 {
    double r11,r12,r13,r21,r22,r23,r31,r32,r33 ;
+                                                       /* clang-format off */
                                                        /*  INPUT MATRIX:  */
    r11 = R.m[0][0]; r12 = R.m[0][1]; r13 = R.m[0][2];  /* [ r11 r12 r13 ] */
    r21 = R.m[1][0]; r22 = R.m[1][1]; r23 = R.m[1][2];  /* [ r21 r22 r23 ] */
    r31 = R.m[2][0]; r32 = R.m[2][1]; r33 = R.m[2][2];  /* [ r31 r32 r33 ] */
+                                                       /* clang-format on */
 
    return (float)(r11*r22*r33-r11*r32*r23-r21*r12*r33
          +r21*r32*r13+r31*r12*r23-r31*r22*r13) ;

@@ -5627,6 +5627,7 @@ int fill_hdr1_field_array( field_s * nh_fields )
          nhf++;
    */
    errs = 0;
+   /* clang-format off */
    NT_FILL(nifti_1_header, nhf, DT_INT32,     sizeof_hdr,     1, rv);  errs += rv;
    NT_FILL(nifti_1_header, nhf, NT_DT_STRING, data_type,     10, rv);  errs += rv;
    NT_FILL(nifti_1_header, nhf, NT_DT_STRING, db_name,       18, rv);  errs += rv;
@@ -5676,6 +5677,7 @@ int fill_hdr1_field_array( field_s * nh_fields )
    NT_FILL(nifti_1_header, nhf, DT_FLOAT32,   srow_z,         4, rv);  errs += rv;
    NT_FILL(nifti_1_header, nhf, NT_DT_STRING, intent_name,   16, rv);  errs += rv;
    NT_FILL(nifti_1_header, nhf, NT_DT_STRING, magic,          4, rv);  errs += rv;
+   /* clang-format on */
 
    if( errs > 0 ){
       fprintf(stderr, "** %d fill_fields errors!\n", errs);
@@ -5708,6 +5710,7 @@ int fill_hdr2_field_array( field_s * nh_fields )
          nhf++;
    */
    errs = 0;
+   /* clang-format off */
    NT_FILL(nifti_2_header, nhf, DT_INT32,     sizeof_hdr,     1, rv);  errs += rv;
    NT_FILL(nifti_2_header, nhf, NT_DT_STRING, magic,          8, rv);  errs += rv;
 
@@ -5755,6 +5758,7 @@ int fill_hdr2_field_array( field_s * nh_fields )
    NT_FILL(nifti_2_header, nhf, DT_INT8,      dim_info,       1, rv);  errs += rv;
 
    NT_FILL(nifti_2_header, nhf, NT_DT_STRING, unused_str,    15, rv);  errs += rv;
+   /* clang-format on */
 
    if( errs > 0 ){
       fprintf(stderr, "** %d fill_fields errors!\n", errs);
@@ -5785,6 +5789,7 @@ int fill_nim1_field_array( field_s * nim_fields )
 
    errs = 0;
 
+   /* clang-format off */
    NT_FILL(nifti1_image, nif, DT_INT32,             ndim,  1, rv);  errs += rv;
    NT_FILL(nifti1_image, nif, DT_INT32,               nx,  1, rv);  errs += rv;
    NT_FILL(nifti1_image, nif, DT_INT32,               ny,  1, rv);  errs += rv;
@@ -5794,7 +5799,9 @@ int fill_nim1_field_array( field_s * nim_fields )
    NT_FILL(nifti1_image, nif, DT_INT32,               nv,  1, rv);  errs += rv;
    NT_FILL(nifti1_image, nif, DT_INT32,               nw,  1, rv);  errs += rv;
    NT_FILL(nifti1_image, nif, DT_INT32,              dim,  8, rv);  errs += rv;
+   /* clang-format on */
    /* nvox: int32 -> size_t, 29 Jul 2007 -> int64_t, 29 Aug 2013 */
+   /* clang-format off */
    NT_FILL(nifti1_image, nif, DT_INT64,             nvox,  1, rv);  errs += rv;
    NT_FILL(nifti1_image, nif, DT_INT32,           nbyper,  1, rv);  errs += rv;
    NT_FILL(nifti1_image, nif, DT_INT32,         datatype,  1, rv);  errs += rv;
@@ -5849,6 +5856,7 @@ int fill_nim1_field_array( field_s * nim_fields )
    NT_FILL(nifti1_image, nif, NT_DT_POINTER,        data,  1, rv);  errs += rv;
    NT_FILL(nifti1_image, nif, DT_INT32,          num_ext,  1, rv);  errs += rv;
    NT_FILL(nifti1_image, nif, NT_DT_EXT_PTR,    ext_list,  1, rv);  errs += rv;
+   /* clang-format on */
 
    if( errs > 0 ){
       fprintf(stderr, "** %d fill_fields errors "
@@ -5879,6 +5887,7 @@ int fill_nim2_field_array( field_s * nim_fields )
 
    errs = 0;
 
+   /* clang-format off */
    NT_FILL(nifti2_image, nif, DT_INT32,             ndim,  1, rv);  errs += rv;
    NT_FILL(nifti2_image, nif, DT_INT64,               nx,  1, rv);  errs += rv;
    NT_FILL(nifti2_image, nif, DT_INT64,               ny,  1, rv);  errs += rv;
@@ -5942,6 +5951,7 @@ int fill_nim2_field_array( field_s * nim_fields )
    NT_FILL(nifti2_image, nif, NT_DT_POINTER,        data,  1, rv);  errs += rv;
    NT_FILL(nifti2_image, nif, DT_INT32,          num_ext,  1, rv);  errs += rv;
    NT_FILL(nifti2_image, nif, NT_DT_EXT_PTR,    ext_list,  1, rv);  errs += rv;
+   /* clang-format on */
 
    if( errs > 0 ){
       fprintf(stderr, "** %d fill_fields errors "
@@ -5975,6 +5985,7 @@ int fill_ana_field_array( field_s * ah_fields )
          nhf++;
    */
    errs = 0;
+   /* clang-format off */
    NT_FILL(nifti_analyze75, ahf, DT_INT32,     sizeof_hdr,     1, rv);  errs += rv;
    NT_FILL(nifti_analyze75, ahf, NT_DT_STRING, data_type,     10, rv);  errs += rv;
    NT_FILL(nifti_analyze75, ahf, NT_DT_STRING, db_name,       18, rv);  errs += rv;
@@ -6013,7 +6024,9 @@ int fill_ana_field_array( field_s * ah_fields )
    NT_FILL(nifti_analyze75, ahf, NT_DT_STRING, aux_file,      24, rv);  errs += rv;
 
    NT_FILL(nifti_analyze75, ahf, DT_INT8,      orient,         1, rv);  errs += rv;
+   /* clang-format on */
    /* originator is 5 (3) shorts, not 10 chars        26 Sep 2012 [rickr] */
+   /* clang-format off */
    NT_FILL(nifti_analyze75, ahf, DT_INT16,     originator,     5, rv);  errs += rv;
    NT_FILL(nifti_analyze75, ahf, NT_DT_STRING, generated,     10, rv);  errs += rv;
    NT_FILL(nifti_analyze75, ahf, NT_DT_STRING, scannum,       10, rv);  errs += rv;
@@ -6031,6 +6044,7 @@ int fill_ana_field_array( field_s * ah_fields )
    NT_FILL(nifti_analyze75, ahf, DT_INT32,     omin,           1, rv);  errs += rv;
    NT_FILL(nifti_analyze75, ahf, DT_INT32,     smax,           1, rv);  errs += rv;
    NT_FILL(nifti_analyze75, ahf, DT_INT32,     smin,           1, rv);  errs += rv;
+   /* clang-format on */
 
    if( errs > 0 ){
       fprintf(stderr, "** %d ana fill_fields errors!\n", errs);

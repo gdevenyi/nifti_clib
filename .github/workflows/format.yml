@@ -1,0 +1,22 @@
+name: Format
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  clang-format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      # Fetches the pinned clang-format (see format.sh) and diffs every
+      # source file against it.  Fails with the list of offending files.
+      - name: Check formatting
+        run: ./format.sh --check
