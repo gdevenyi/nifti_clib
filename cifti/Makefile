@@ -13,7 +13,7 @@ NIFLAGS         = $(IFLAGS) -I$(N2DIR) -I../niftilib -I../znzlib $(USEZLIB)
 
 LLIBS 		= -lz -lm
 OBJS            = afni_xml.o afni_xml_io.o
-NOBJS           = nifti2_io.o nifticdf.o znzlib.o
+NOBJS           = nifti2_io.o znzlib.o
 
 # --------------------------------------------------
 # default compile for C files
@@ -45,9 +45,6 @@ cifti_tool: $(OBJS) $(NOBJS) cifti_tool.o
 
 nifti2_io.o:
 	$(CC) -c -DHAVE_ZLIB $(CFLAGS) $(NIFLAGS) $(N2DIR)/nifti2_io.c
-
-nifticdf.o:
-	$(CC) -c -DHAVE_ZLIB $(CFLAGS) $(NIFLAGS) ../nifticdf/nifticdf.c
 
 znzlib.o:
 	$(CC) -c -DHAVE_ZLIB $(CFLAGS) $(NIFLAGS) ../znzlib/znzlib.c

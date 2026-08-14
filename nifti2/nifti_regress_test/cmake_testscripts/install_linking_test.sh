@@ -18,7 +18,6 @@ export PATH="$PWD/$DESTDIR/usr/local/bin:$PATH"
 $BUILD_TOOL install
 nifti_tool 1>/dev/null
 nifti1_tool 1>/dev/null
-nifti_stats 1>/dev/null
 
 
 # Run an example of a downstream project linking against the nifti targets

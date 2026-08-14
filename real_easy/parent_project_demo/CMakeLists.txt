@@ -66,7 +66,6 @@ set(SILLYDEMO_TARGETS "SillyDemoTargets")
 set( USE_NIFTI2_CODE ON CACHE BOOL "Do not build NIFTI2 provided by NIFTI" FORCE )
 set( USE_FSL_CODE ON CACHE BOOL "Do not build FSL provided by NIFTI" FORCE )
 set( USE_CIFTI_CODE ON  CACHE BOOL "Do not build CIFTI provided by NIFTI" FORCE )
-set( USE_NIFTICDF_CODE ON CACHE BOOL "Do not build NIFTICDF provided by NIFTI" FORCE )
 set( NIFTI_USE_PACKAGING OFF CACHE BOOL "Do not use packaging from nifti when included as part of another package" FORCE )
 set( NIFTI_BUILD_APPLICATIONS ON CACHE BOOL "Do not build applications provided by NIFTI" FORCE )
 # Testing is not compatible with SILLYDEMO at the moment 

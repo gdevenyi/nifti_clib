@@ -2,6 +2,23 @@
 Updates to the niftilb C package
 
 -----------------------------------------------------------------
+Unreleased
+
+    - REMOVED the nifticdf library, its nifticdf.h header and the
+      nifti_stats tool.  The cumulative-distribution code was a
+      mechanical translation of DCDFLIB (Brown and Lovato) and was
+      unrelated to NIfTI file I/O; no other library in this package
+      depended on it.  Consumers that need it (AFNI, SPM, MINC)
+      already vendor their own copy of nifticdf.c rather than
+      linking libnifticdf, and can continue to take it from the
+      3.0.1 release.
+      NOTE: this removes libnifticdf from the installed package.
+      Downstream projects linking -lnifticdf or using the
+      NIFTI::nifticdf CMake target must be updated.
+    - the real_easy example programs now demonstrate linkage
+      against niftiio instead of nifticdf.
+
+-----------------------------------------------------------------
 Updates in version 0.3 April 12, 2006
 
     - added const in appropriate function parameter locations

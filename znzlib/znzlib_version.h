@@ -1,5 +1,5 @@
 /* NOTE:  When changing version consider the impact on versions in
-  nifti2_io_version.h nifti1_io_version.h nifticdf_version.h and znzlib.h
+  nifti2_io_version.h nifti1_io_version.h and znzlib.h
 */
 #define ZNZLIB_VERSION_MAJOR 3
 #define ZNZLIB_VERSION_MINOR 0

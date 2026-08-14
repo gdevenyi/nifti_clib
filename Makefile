@@ -3,11 +3,10 @@ SHELL		=	csh
 
 ## Projects
 NIFTI		=	niftilib
-NIFTICDF	=	nifticdf
 ZNZ		=	znzlib
 FSLIO		=	fsliolib
 TESTING		=	Testing
-UTILS_PROGS	=	nifti_stats nifti_tool nifti1_test
+UTILS_PROGS	=	nifti_tool nifti1_test
 THIS_DIR	=	`basename ${PWD}`
 
 ## Note the TARFILE_NAME embeds the release version number
@@ -81,11 +80,6 @@ NIFTI_INC	=	-I../$(NIFTI)
 NIFTI_PATH	=	-L../$(NIFTI)
 NIFTI_LIBS	=	$(NIFTI_PATH) -lniftiio
 
-## NIFTICDF defines
-NIFTICDF_INC	=	-I../$(NIFTICDF)
-NIFTICDF_PATH	=	-L../$(NIFTICDF)
-NIFTICDF_LIBS	=	$(NIFTICDF_PATH) -lnifticdf
-
 ## FSLIO defines
 FSLIO_INC	=	-I../$(FSLIO)
 FSLIO_PATH	=	-L../$(FSLIO)
@@ -102,11 +96,11 @@ FSLIO_LIBS	=	$(FSLIO_PATH) -lfslio
 
 ## Targets
 
-all:	   znz nifti nifticdf fslio install mention_cmake
+all:	   znz nifti fslio install mention_cmake
 
-install:   znz_install nifti_install nifticdf_install fslio_install 
+install:   znz_install nifti_install fslio_install 
 
-clean:	   znz_clean nifti_clean nifticdf_clean fslio_clean
+clean:	   znz_clean nifti_clean fslio_clean
 
 clean_all: clean install_clean doc_clean
 
@@ -120,11 +114,6 @@ znz:
 nifti:	znz
 	(cd $(NIFTI); $(MAKE) depend; $(MAKE) lib;)
 	@echo " ----------- $(NIFTI) build completed."
-	@echo ""
-
-nifticdf:nifti
-	(cd $(NIFTICDF); $(MAKE) depend; $(MAKE) lib;)
-	@echo " ----------- $(NIFTICDF) build completed."
 	@echo ""
 
 fslio:	nifti
@@ -164,12 +153,6 @@ nifti_install: $(INSTALL_INC_DIR) $(INSTALL_LIB_DIR)
 	@echo " $(NIFTI) installed."
 	@echo ""
 
-nifticdf_install: $(INSTALL_INC_DIR) $(INSTALL_LIB_DIR)
-	($(CP) $(NIFTICDF)/*.a $(INSTALL_LIB_DIR); $(CP) $(NIFTICDF)/*.h $(INSTALL_INC_DIR);)
-	$(RANLIB) $(INSTALL_LIB_DIR)/*.a
-	@echo " $(NIFTI) installed."
-	@echo ""
-
 fslio_install: $(INSTALL_INC_DIR) $(INSTALL_LIB_DIR)
 	($(CP) $(FSLIO)/*.a $(INSTALL_LIB_DIR); $(CP) $(FSLIO)/*.h $(INSTALL_INC_DIR);)
 	$(RANLIB) $(INSTALL_LIB_DIR)/*.a
@@ -184,9 +167,6 @@ znz_clean:
 
 nifti_clean:
 	(cd $(NIFTI); $(RM) -f *.o *.a core; $(RM) -f depend.mk;)
-
-nifticdf_clean:
-	(cd $(NIFTICDF); $(RM) -f *.o *.a core; $(RM) -f depend.mk;)
 
 fslio_clean:
 	(cd $(FSLIO); $(RM) -f *.o *.a core; $(RM) -f depend.mk;)
@@ -234,8 +214,6 @@ help:
 	@echo "znz_install:      install the znz library"
 	@echo "nifti:            build the nifti1 library"
 	@echo "nifti_install:    install the nifti1 library"
-	@echo "nifticdf:         build the nifti1 library"
-	@echo "nifticdf_install: install the nifti1 library"
 	@echo "fslio:            build the fslio library"
 	@echo "fslio_install:    install the fslio library"
 	@echo "example:          make the example program(s)"

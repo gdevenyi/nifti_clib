@@ -716,9 +716,6 @@ int main (int argc, const char *argv[])
   znzclose(f);
   nifti_image_free(nim);
   }
-  /*
-   * call various functions from nifti_stats
-   */
   printf("\n\nTOTAL ERRORS=%d\n",Errors);
   return Errors;
 }

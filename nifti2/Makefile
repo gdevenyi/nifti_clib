@@ -17,7 +17,7 @@ endif
 
 LLIBS 		= -lz -lm
 
-MISC_OBJS	= nifticdf.o znzlib.o
+MISC_OBJS	= znzlib.o
 OBJS	   	= nifti2_io.o $(MISC_OBJS)
 
 TOOLS 	   	= nifti_tool nifti1_tool nifti2_tool
@@ -47,9 +47,6 @@ clib_02_nifti2: clib_02_nifti2.o nifti2objs
 
 # --------------------------------------------------
 # targets from source residing elsewhere
-nifticdf.o:
-	$(CC) -c $(CFLAGS) ../nifticdf/nifticdf.c -o $@
-
 znzlib.o:
 	$(CC) -c $(CFLAGS) ../znzlib/znzlib.c -o $@
 

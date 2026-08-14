@@ -27,12 +27,9 @@ suspiciousFloatingPointCast:*/nifti2_io.c
 // ***** TODO: to investigate all below:
 
 // This file is too scary to change.
-constParameter:*/nifticdf.c
-incorrectLogicOperator:*/nifticdf.c
 
 // Correct warnings, but not sure how to fix.
 identicalInnerCondition:*/fslio.c
-knownConditionTrueFalse:*/nifticdf.c
 
 // Many correct warnings, should be fixed...
 comparePointers:*/nifti1_tool.c

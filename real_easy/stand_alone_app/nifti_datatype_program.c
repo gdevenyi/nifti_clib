@@ -1,4 +1,5 @@
 /* A simple program to test linkage against the niftiio package */
+
 #include <stdlib.h>
 
 #include "nifti1_io.h"

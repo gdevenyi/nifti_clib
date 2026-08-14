@@ -53,7 +53,6 @@ directory |  description
 znzlib    | low level library for handling read/write of compressed files.
 niftilib  | core i/o routines for reading and writing nifti-1 format files.  Primarily routines to read/write and manipulate the header field information, including orientation matrices.  Volume-wise, timecourse-wise, access to image data.
 nifti2    | core i/o routines for reading and writing nifti-2 format files.
-nifticdf  | functions to compute cumulative distributions and their inverses
 fsliolib  | i/o routines for reading and writing nifti-1 format files, higher level than niftilib, includes routines for reading the data blob by volume, timecourse, etc., and, addresses image orientation issues.  `work in progress, subject to significant revision.....`
 cifti     | very basic routines for reading cifti format files
 

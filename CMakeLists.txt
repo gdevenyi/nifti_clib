@@ -191,12 +191,6 @@ mark_as_advanced(NIFTI_SYSTEM_MATH_LIB)
 add_subdirectory(znzlib)
 add_subdirectory(niftilib)
 
-option(USE_NIFTICDF_CODE "Build nifticdf library and tools" ON)
-mark_as_advanced(USE_NIFTICDF_CODE)
-if(USE_NIFTICDF_CODE)
-    add_subdirectory(nifticdf)
-endif()
-
 option(USE_NIFTI2_CODE "Build the nifti2 library and tools" ON)
 mark_as_advanced(USE_NIFTI2_CODE)
 cmake_dependent_option(USE_CIFTI_CODE "Build the cifti library and tools" OFF "USE_NIFTI2_CODE" OFF)

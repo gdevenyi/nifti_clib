@@ -29,4 +29,4 @@ endif()
 
 #  Example of linking project executables against nifti_clib defined targets
 add_executable(parent_exe src/parent_project_exe.c)
-target_link_libraries(parent_exe PRIVATE NIFTI::nifticdf)
+target_link_libraries(parent_exe PRIVATE NIFTI::niftiio)

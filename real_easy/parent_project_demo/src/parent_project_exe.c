@@ -1,9 +1,11 @@
-/* A simple program to test linkage against the nifticdf package */
-#include "nifticdf.h"
-int main()
-{
-  double input= 7.0;
-  const double output = alnrel(&input);
+/* A simple program to test linkage against the niftiio package */
+#include <stdlib.h>
 
-  return (output > 0.0) ? EXIT_SUCCESS: EXIT_FAILURE ;
+#include "nifti1_io.h"
+
+int main(void)
+{
+  const char * const name = nifti_datatype_string(DT_FLOAT32);
+
+  return (name != NULL) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
