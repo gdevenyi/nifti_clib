@@ -49,6 +49,10 @@ znzFile
 znzopen(const char * path, const char * mode, int use_compression)
 {
   znzFile file;
+
+#ifndef HAVE_ZLIB
+  (void)use_compression; /* without zlib every file is opened uncompressed */
+#endif
   file = (znzFile)calloc(1, sizeof(struct znzptr));
   if (file == NULL)
   {

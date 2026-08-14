@@ -4977,6 +4977,8 @@ nifti_makehdrname(const char * prefix, int nifti_type, int check, int comp)
 #ifdef HAVE_ZLIB /* if compression is requested, make sure of suffix */
   if (comp && (!ext || !strstr(iname, extgz)))
     strcat(iname, extgz);
+#else
+  (void)comp; /* the .gz suffix is only ever added with zlib support */
 #endif
 
   /* check for existence failure */
@@ -5062,6 +5064,8 @@ nifti_makeimgname(const char * prefix, int nifti_type, int check, int comp)
 #ifdef HAVE_ZLIB /* if compression is requested, make sure of suffix */
   if (comp && (!ext || !strstr(iname, extgz)))
     strcat(iname, extgz);
+#else
+  (void)comp; /* the .gz suffix is only ever added with zlib support */
 #endif
 
   /* check for existence failure */
