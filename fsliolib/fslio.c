@@ -410,8 +410,8 @@ FslGetHdrImgNames(const char * filename, const FSLIO * fslio, char ** hdrname, c
   char * basename;
   int    filetype;
   basename = FslMakeBaseName(filename);
-  *hdrname = (char *)calloc(sizeof(char), strlen(basename) + 8);
-  *imgname = (char *)calloc(sizeof(char), strlen(basename) + 8);
+  *hdrname = (char *)calloc(strlen(basename) + 8, sizeof(char));
+  *imgname = (char *)calloc(strlen(basename) + 8, sizeof(char));
   strcpy(*hdrname, basename);
   strcpy(*imgname, basename);
   filetype = FslGetFileType(fslio);

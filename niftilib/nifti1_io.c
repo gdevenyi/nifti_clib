@@ -3458,7 +3458,7 @@ nifti_findhdrname(const char * fname)
     make_uppercase(extzip);
   }
 
-  hdrname = (char *)calloc(sizeof(char), strlen(basename) + 8);
+  hdrname = (char *)calloc(strlen(basename) + 8, sizeof(char));
   if (!hdrname)
   {
     fprintf(stderr, "** nifti_findhdrname: failed to alloc hdrname\n");
@@ -3472,7 +3472,7 @@ nifti_findhdrname(const char * fname)
   if (nifti_fileexists(hdrname))
   {
     free(basename);
-    char * gzname = (char *)calloc(sizeof(char), strlen(hdrname) + 8);
+    char * gzname = (char *)calloc(strlen(hdrname) + 8, sizeof(char));
     strcpy(gzname, hdrname);
     strcat(gzname, extzip);
     if (nifti_fileexists(gzname))
@@ -3560,7 +3560,7 @@ nifti_findimgname(const char * fname, int nifti_type)
     return NULL;
 
   basename = nifti_makebasename(fname);
-  imgname = (char *)calloc(sizeof(char), strlen(basename) + 8);
+  imgname = (char *)calloc(strlen(basename) + 8, sizeof(char));
   if (!imgname)
   {
     fprintf(stderr, "** nifti_findimgname: failed to alloc imgname\n");
@@ -3673,7 +3673,7 @@ nifti_makehdrname(const char * prefix, int nifti_type, int check, int comp)
     return NULL;
 
   /* add space for extension, optional ".gz", and null char */
-  iname = (char *)calloc(sizeof(char), strlen(prefix) + 8);
+  iname = (char *)calloc(strlen(prefix) + 8, sizeof(char));
   if (!iname)
   {
     fprintf(stderr, "** small malloc failure!\n");
@@ -3758,7 +3758,7 @@ nifti_makeimgname(const char * prefix, int nifti_type, int check, int comp)
     return NULL;
 
   /* add space for extension, optional ".gz", and null char */
-  iname = (char *)calloc(sizeof(char), strlen(prefix) + 8);
+  iname = (char *)calloc(strlen(prefix) + 8, sizeof(char));
   if (!iname)
   {
     fprintf(stderr, "** small malloc failure!\n");
@@ -5336,7 +5336,7 @@ nifti_read_ascii_image(znzFile fp, char * fname, int flen, int read_data)
 
   if (slen > 65530)
     slen = 65530;
-  sbuf = (char *)calloc(sizeof(char), slen + 1);
+  sbuf = (char *)calloc(slen + 1, sizeof(char));
   if (!sbuf)
   {
     fprintf(stderr, "** %s: failed to alloc %d bytes for sbuf", lfunc, 65530);
