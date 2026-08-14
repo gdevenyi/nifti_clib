@@ -4,7 +4,8 @@
  * extension list, which could cause all sorts of grief.
  */
 #include <nifti1_io.h>
-int main (int argc, const char *argv[])
+int
+main(int argc, const char * argv[])
 {
   if (argc > 1)
   {
@@ -15,14 +16,14 @@ int main (int argc, const char *argv[])
   /*
    * create a 'dummy' image
    */
-  nifti_image *i1 = nifti_simple_init_nim();
-  nifti_image *i2;
+  nifti_image * i1 = nifti_simple_init_nim();
+  nifti_image * i2;
 
   /*
    * add an extension to the dummy
    */
   const char ext[] = "THIS IS A TEST";
-  nifti_add_extension(i1,ext,sizeof(ext),NIFTI_ECODE_COMMENT);
+  nifti_add_extension(i1, ext, sizeof(ext), NIFTI_ECODE_COMMENT);
   /*
    * make a new nim from the dummy
    */

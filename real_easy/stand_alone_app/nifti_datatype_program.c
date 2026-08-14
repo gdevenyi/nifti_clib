@@ -4,7 +4,8 @@
 
 #include "nifti1_io.h"
 
-int main(void)
+int
+main(void)
 {
   const char * const name = nifti_datatype_string(DT_FLOAT32);
 
