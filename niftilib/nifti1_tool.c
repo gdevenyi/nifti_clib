@@ -788,7 +788,7 @@ fill_cmd_string(nt_opts * opts, int argc, const char * argv[])
     else
       len = snprintf(cp, remain, " %s", argv[ac]);
 
-    if (len < 0 || len >= remain)
+    if (len < 0 || (size_t)len >= remain)
     {
       fprintf(stderr, "FCS: error parsing command, continuing...\n");
       return 1;
