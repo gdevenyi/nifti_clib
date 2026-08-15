@@ -9527,10 +9527,15 @@ doPigz2(nifti_image * nim, struct nifti_2_header nhdr, const nifti_brick_list * 
 {
   FILE * pigzPipe;
   char   command[768];
-  strcpy(command, "pigz");
-  strcat(command, " -n -f > \"");
-  strcat(command, nim->fname);
-  strcat(command, "\"");
+  int    cmdlen;
+  /* nim->fname is caller-supplied and unbounded, so build this with a
+     bounded write and refuse to run a truncated shell command. */
+  cmdlen = snprintf(command, sizeof(command), "pigz -n -f > \"%s\"", nim->fname);
+  if (cmdlen < 0 || (size_t)cmdlen >= sizeof(command))
+  {
+    fprintf(stderr, "** pigz: file name too long for the command buffer\n");
+    return -1;
+  }
 #    ifdef _MSC_VER
   if ((pigzPipe = _popen(command, "w")) == NULL)
     return -1;
@@ -9567,10 +9572,15 @@ doPigz(nifti_image * nim, struct nifti_1_header nhdr, const nifti_brick_list * N
 {
   FILE * pigzPipe;
   char   command[768];
-  strcpy(command, "pigz");
-  strcat(command, " -n -f > \"");
-  strcat(command, nim->fname);
-  strcat(command, "\"");
+  int    cmdlen;
+  /* nim->fname is caller-supplied and unbounded, so build this with a
+     bounded write and refuse to run a truncated shell command. */
+  cmdlen = snprintf(command, sizeof(command), "pigz -n -f > \"%s\"", nim->fname);
+  if (cmdlen < 0 || (size_t)cmdlen >= sizeof(command))
+  {
+    fprintf(stderr, "** pigz: file name too long for the command buffer\n");
+    return -1;
+  }
 #    ifdef _MSC_VER
   if ((pigzPipe = _popen(command, "w")) == NULL)
     return -1;
