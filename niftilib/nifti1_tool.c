@@ -3022,7 +3022,7 @@ int modify_field(void * basep, field_s * field, const char * data)
          case NT_DT_STRING:
          {
             char * dest = (char *)basep + field->offset;
-            nchars = dataLength;
+            nchars = (int)dataLength;
             strncpy(dest, data, field->len);
             if( nchars < field->len )  /* clear the rest */
                memset(dest+nchars, '\0', field->len-nchars);
