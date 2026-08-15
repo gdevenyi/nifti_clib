@@ -176,9 +176,11 @@ znzread(void * buf, size_t size, size_t nmemb, znzFile file)
       n2read = (remain < ZNZ_MAX_BLOCK_SIZE) ? (unsigned)remain : ZNZ_MAX_BLOCK_SIZE;
       nread = gzread(file->zfptr, (void *)cbuf, n2read);
       if (nread < 0)
-        return nread; /* returns -1 on error */
+        return (size_t)nread; /* the declared size_t cannot hold -1; this
+                                 wraps to SIZE_MAX, which callers detect by
+                                 comparing against the requested count */
 
-      remain -= nread;
+      remain -= (size_t)nread;
       cbuf += nread;
 
       /* require reading n2read bytes, so we don't get stuck */

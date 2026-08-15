@@ -5933,7 +5933,7 @@ nifti_convert_n1hdr2nim(nifti_1_header nhdr, const char * fname)
       *   the qform_code will be zero, at which point you can check
       *   analyze75_orient if you care to.
       */
-    unsigned char c = *((char *)(&nhdr.qform_code));
+    unsigned char c = *((unsigned char *)(&nhdr.qform_code));
     nim->analyze75_orient = (analyze_75_orient_code)c;
   }
   if (doswap)
@@ -7162,7 +7162,7 @@ nifti_read_header(const char * hname, int * nver, int check)
   }
 
   /* find out what type of header we have */
-  ni_ver = nifti_header_version((char *)&n1hdr, h1size);
+  ni_ver = nifti_header_version((char *)&n1hdr, (size_t)h1size);
   if (g_opts.debug > 2)
     fprintf(stderr, "-- %s: NIFTI version = %d\n", fname, ni_ver);
 
@@ -7345,7 +7345,7 @@ nifti_image_read(const char * hname, int read_data)
   }
 
   /* find out what type of header we have */
-  ni_ver = nifti_header_version((char *)&n1hdr, h1size);
+  ni_ver = nifti_header_version((char *)&n1hdr, (size_t)h1size);
   if (g_opts.debug > 2)
     fprintf(stderr, "-- %s: NIFTI version = %d\n", fname, ni_ver);
 
@@ -7802,7 +7802,7 @@ nifti_add_exten_to_list(nifti1_extension * new_ext, nifti1_extension ** list, in
     fprintf(stderr,
             "** NIFTI: failed to alloc %d ext structs (%zu bytes)\n",
             new_length,
-            new_length * sizeof(nifti1_extension));
+            (size_t)new_length * sizeof(nifti1_extension));
     if (!tmplist)
       return -1; /* no old list to lose */
 
@@ -8423,7 +8423,7 @@ nifti_read_buffer(znzFile fp, void * dataptr, int64_t ntot, nifti_image * nim)
       {
         float * far = (float *)dataptr;
         int64_t jj, nj;
-        nj = ntot / sizeof(float);
+        nj = ntot / (int64_t)sizeof(float);
         for (jj = 0; jj < nj; jj++) /* count fixes 30 Nov 2004 [rickr] */
           if (!IS_GOOD_FLOAT(far[jj]))
           {
@@ -8438,7 +8438,7 @@ nifti_read_buffer(znzFile fp, void * dataptr, int64_t ntot, nifti_image * nim)
       {
         double * far = (double *)dataptr;
         int64_t  jj, nj;
-        nj = ntot / sizeof(double);
+        nj = ntot / (int64_t)sizeof(double);
         for (jj = 0; jj < nj; jj++) /* count fixes 30 Nov 2004 [rickr] */
           if (!IS_GOOD_FLOAT(far[jj]))
           {

@@ -924,7 +924,7 @@ nifti_load_NBL_bricks(nifti_image * nim, const int * slist, const int * sindex, 
     fprintf(stderr, "** load bricks: ztell failed??\n");
     return -1;
   }
-  fposn = oposn = test;
+  fposn = oposn = (size_t)test;
 
   /* first, handle the default case, no passed blist */
   if (!slist)
@@ -3052,7 +3052,7 @@ nifti_get_filesize(const char * pathname)
   ii = stat(pathname, &buf);
   if (ii != 0)
     return -1;
-  return (unsigned int)buf.st_size;
+  return (int)buf.st_size;
 }
 
 #else /*---------- non-Unix version of the above, less efficient -----------*/
@@ -4563,7 +4563,7 @@ nifti_convert_nhdr2nim(struct nifti_1_header nhdr, const char * fname)
       *   the qform_code will be zero, at which point you can check
       *   analyze75_orient if you care to.
       */
-    unsigned char c = *((char *)(&nhdr.qform_code));
+    unsigned char c = *((unsigned char *)(&nhdr.qform_code));
     nim->analyze75_orient = (analyze_75_orient_code)c;
   }
   if (doswap)
@@ -5275,9 +5275,9 @@ nifti_image_read(const char * hname, int read_data)
 
   /**- check for extensions (any errors here means no extensions) */
   if (NIFTI_ONEFILE(nhdr))
-    remaining = nim->iname_offset - sizeof(nhdr);
+    remaining = (int)((size_t)nim->iname_offset - sizeof(nhdr));
   else
-    remaining = filesize - sizeof(nhdr);
+    remaining = (int)((size_t)filesize - sizeof(nhdr));
 
   (void)nifti_read_extensions(nim, fp, remaining);
 
@@ -5590,7 +5590,7 @@ nifti_add_exten_to_list(nifti1_extension * new_ext, nifti1_extension ** list, in
     fprintf(stderr,
             "** failed to alloc %d extension structs (%zu bytes)\n",
             new_length,
-            new_length * sizeof(nifti1_extension));
+            (size_t)new_length * sizeof(nifti1_extension));
     if (!tmplist)
       return -1; /* no old list to lose */
 
@@ -5947,7 +5947,7 @@ nifti_image_load_prep(nifti_image * nim)
       znzclose(fp);
       return NULL;
     }
-    ii = nifti_get_filesize(nim->iname);
+    ii = (size_t)nifti_get_filesize(nim->iname);
     if (ii == 0)
     {
       if (g_opts.debug > 0)
@@ -5958,8 +5958,8 @@ nifti_image_load_prep(nifti_image * nim)
     ioff = (ii > ntot) ? ii - ntot : 0;
   }
   else
-  {                           /* non-negative offset   */
-    ioff = nim->iname_offset; /* means use it directly */
+  {                                   /* non-negative offset   */
+    ioff = (size_t)nim->iname_offset; /* means use it directly */
   }
 
   /**- seek to the appropriate read position */
@@ -6067,7 +6067,9 @@ nifti_read_buffer(znzFile fp, void * dataptr, size_t ntot, nifti_image * nim)
   {
     if (g_opts.debug > 0)
       fprintf(stderr, "** ERROR: nifti_read_buffer: NULL dataptr\n");
-    return -1;
+    /* the declared return type is size_t, so this reaches the caller as
+       SIZE_MAX rather than -1; callers test against the requested count */
+    return (size_t)-1;
   }
 
   ii = znzread(dataptr, 1, ntot, fp); /* data input */
@@ -6086,7 +6088,7 @@ nifti_read_buffer(znzFile fp, void * dataptr, size_t ntot, nifti_image * nim)
               (unsigned int)ii,
               (unsigned int)(ntot - ii));
     /* memset( (char *)(dataptr)+ii , 0 , ntot-ii ) ;  now failure [rickr] */
-    return -1;
+    return (size_t)-1; /* see the note on the other failure return above */
   }
 
   if (g_opts.debug > 2)
@@ -6099,7 +6101,7 @@ nifti_read_buffer(znzFile fp, void * dataptr, size_t ntot, nifti_image * nim)
   {
     if (g_opts.debug > 1)
       fprintf(stderr, "+d nifti_read_buffer: swapping data bytes...\n");
-    nifti_swap_Nbytes((int)(ntot / nim->swapsize), nim->swapsize, dataptr);
+    nifti_swap_Nbytes(ntot / (size_t)nim->swapsize, nim->swapsize, dataptr);
   }
 
 #ifdef isfinite
@@ -6765,7 +6767,7 @@ nifti_copy_extensions(nifti_image * nim_dest, const nifti_image * nim_src)
   if (nim_src->num_ext <= 0)
     return 0;
 
-  bytes = nim_src->num_ext * sizeof(nifti1_extension); /* I'm lazy */
+  bytes = (size_t)nim_src->num_ext * sizeof(nifti1_extension); /* I'm lazy */
   nim_dest->ext_list = (nifti1_extension *)malloc(bytes);
   if (!nim_dest->ext_list)
   {
@@ -6865,7 +6867,7 @@ nifti_set_iname_offset(nifti_image * nim)
 
     /* NIFTI-1 single binary file - always update */
     case NIFTI_FTYPE_NIFTI1_1:
-      offset = nifti_extension_size(nim) + sizeof(struct nifti_1_header) + 4;
+      offset = (int)((size_t)nifti_extension_size(nim) + sizeof(struct nifti_1_header) + 4);
       /* be sure offset is aligned to a 16 byte boundary */
       if ((offset % 16) != 0)
         offset = ((offset + 0xf) & ~0xf);
@@ -8565,7 +8567,7 @@ nifti_read_collapsed_image(nifti_image * nim, const int dims[8], void ** data)
 
   /** - call the recursive reading function, passing nim, the pivot info,
          location to store memory, and file pointer and position */
-  c = rci_read_data(nim, pivots, prods, nprods, dims, (char *)*data, fp, znztell(fp));
+  c = rci_read_data(nim, pivots, prods, nprods, dims, (char *)*data, fp, (size_t)znztell(fp));
   znzclose(fp); /* in any case, close the file */
   if (c < 0)
   {
@@ -8839,7 +8841,7 @@ rci_read_data(nifti_image * nim,
 
     /* so just seek and read (prods[0] * nbyper) bytes from the file */
     znzseek(fp, (long)base_offset, SEEK_SET);
-    bytes = (size_t)prods[0] * nim->nbyper;
+    bytes = (size_t)prods[0] * (size_t)nim->nbyper;
     nread = nifti_read_buffer(fp, data, bytes, nim);
     if (nread != bytes)
     {

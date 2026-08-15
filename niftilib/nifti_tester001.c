@@ -109,8 +109,9 @@ generate_reference_image(const char * write_image_filename, int * const Errors)
 
   nifti_image * reference_image = nifti_convert_nhdr2nim(reference_header, write_image_filename);
   {
-    const unsigned int NumVoxels =
-      reference_image->nx * reference_image->ny * reference_image->nz * reference_image->nt * reference_image->nu;
+    const unsigned int NumVoxels = (unsigned)reference_image->nx * (unsigned)reference_image->ny *
+                                   (unsigned)reference_image->nz * (unsigned)reference_image->nt *
+                                   (unsigned)reference_image->nu;
     reference_image->data =
       (signed int *)calloc(NumVoxels, sizeof(signed int)); /*!< pointer to data: nbyper*nvox bytes     */
     PrintTest("Checking memory allocation", reference_image->data == 0, true, Errors);
@@ -164,8 +165,9 @@ compare_reference_image_values(nifti_image const * const reference_image,
   PrintTest("Checking du", (reference_image->du != reloaded_image->du), true, Errors);
   PrintTest("Checking datatype", (reference_image->datatype != reloaded_image->datatype), true, Errors);
   {
-    const unsigned int NumVoxels =
-      reference_image->nx * reference_image->ny * reference_image->nz * reference_image->nt * reference_image->nu;
+    const unsigned int NumVoxels = (unsigned)reference_image->nx * (unsigned)reference_image->ny *
+                                   (unsigned)reference_image->nz * (unsigned)reference_image->nt *
+                                   (unsigned)reference_image->nu;
     PrintTest("Check loaded data is non null", (reloaded_image->data == 0), true, Errors);
     PrintTest("Check reference_image data is non null", (reference_image->data == 0), true, Errors);
     {

@@ -144,7 +144,7 @@ axio_num_tokens(const char * str, int64_t maxlen)
   if (maxlen > 0)
     len = maxlen;
   else
-    len = strlen(str);
+    len = (int64_t)strlen(str);
 
   ntok = 0;
   intok = 0;

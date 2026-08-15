@@ -290,7 +290,7 @@ axml_read_file(const char * fname, int read_data)
     {
       if (xd->verb > 1)
         fprintf(stderr, "-- AXML: truncating fbuffer from %u to %" PRId64 "\n", blen, bshort);
-      blen = (int)bshort;
+      blen = (unsigned)bshort;
     }
 
     done = blen < (unsigned)bsize;
