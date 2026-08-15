@@ -263,7 +263,10 @@ int axio_show_mim_summary(FILE * fp, const char * mesg, afni_xml_t * ax, int ver
 
       for( kid=0; kid<xt->nchild; kid++ ) {
          mind = get_map_index(xt->xchild[kid]);
-         if( kid >= 0 ) MIM_disp_funcs[mind](ofp, xt->xchild[kid], verb);
+         /* get_map_index() returns -1 for any element name it does not
+            recognise; this test used to be on kid, the loop counter,
+            which is never negative. */
+         if( mind >= 0 ) MIM_disp_funcs[mind](ofp, xt->xchild[kid], verb);
       }
    }
 
