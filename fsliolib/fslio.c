@@ -1790,6 +1790,10 @@ FslSetVoxUnits(FSLIO * fslio, const char * units)
 void
 FslGetVoxUnits(FSLIO * fslio, char * units)
 {
+  /* units must have room for the longest string nifti_units_string() can
+     return plus its terminator: "Unknown", so 8 bytes.  The signature has
+     no length parameter and cannot gain one without breaking callers, so
+     the requirement is recorded here. */
   if (fslio == NULL)
     FSLIOERR("FslGetVoxUnits: Null pointer passed for FSLIO");
   if (fslio->niftiptr != NULL)
