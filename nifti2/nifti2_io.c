@@ -1,3 +1,8 @@
+/* popen()/pclose(), used by the optional PIGZ write path, are POSIX rather
+   than ISO C11.  Requesting them here, before any #include, keeps the
+   dependency visible instead of relying on a global -std=gnu11. */
+#define _POSIX_C_SOURCE 200809L
+
 #define NIFTI2_IO_C
 
 #include <assert.h>

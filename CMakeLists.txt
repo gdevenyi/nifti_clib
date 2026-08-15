@@ -32,6 +32,13 @@ project(NIFTI
         DESCRIPTION "Niftilib is a set of i/o libraries for reading and writing files in the nifti-1 data format. nifti-1 is a binary file format for storing medical image data, e.g. magnetic resonance image (MRI) and functional MRI (fMRI) brain images."
         LANGUAGES C)
 
+# Build as ISO C11 with no compiler extensions.  Sources needing POSIX
+# interfaces (strdup, popen) request them with _POSIX_C_SOURCE at the top of
+# the file, so the dependency is visible where it is taken.
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 include(nifti_macros)
 

@@ -1,3 +1,7 @@
+/* strdup() is POSIX, not ISO C11; ask for it explicitly.  Must precede
+   every #include.  (It is in C23, so this can go once C23 is the floor.) */
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
