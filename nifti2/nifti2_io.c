@@ -3058,7 +3058,7 @@ nifti_dmat33
 nifti_dmat33_mul(nifti_dmat33 A, nifti_dmat33 B)
 /* multiply 2 3x3 matrices */
 {
-  nifti_dmat33 C;
+  nifti_dmat33 C = { { { 0.0 } } };
   int          i, j;
   for (i = 0; i < 3; i++)
     for (j = 0; j < 3; j++)
@@ -3072,7 +3072,7 @@ nifti_dmat33_mul(nifti_dmat33 A, nifti_dmat33 B)
 mat33
 nifti_mat33_mul(mat33 A, mat33 B) /* multiply 2 3x3 matrices */
 {
-  mat33 C;
+  mat33 C = { { { 0.0f } } };
   int   i, j;
   for (i = 0; i < 3; i++)
     for (j = 0; j < 3; j++)
@@ -3086,7 +3086,7 @@ nifti_mat33_mul(mat33 A, mat33 B) /* multiply 2 3x3 matrices */
 nifti_dmat44
 nifti_dmat44_mul(nifti_dmat44 A, nifti_dmat44 B)
 {
-  nifti_dmat44 C;
+  nifti_dmat44 C = { { { 0.0 } } };
   int          i, j, k;
   for (i = 0; i < 4; i++)
     for (j = 0; j < 4; j++)
@@ -3104,7 +3104,7 @@ nifti_dmat44_mul(nifti_dmat44 A, nifti_dmat44 B)
 mat44
 nifti_mat44_mul(mat44 A, mat44 B)
 {
-  mat44 C;
+  mat44 C = { { { 0.0f } } };
   int   i, j, k;
   for (i = 0; i < 4; i++)
     for (j = 0; j < 4; j++)
@@ -3277,8 +3277,11 @@ nifti_dmat44_to_orientation(nifti_dmat44 R, int * icod, int * jcod, int * kcod)
 {
   double       xi, xj, xk, yi, yj, yk, zi, zj, zk, val, detQ, detP;
   nifti_dmat33 P, Q, M;
-  int          i, j, k = 0, p, q, r, ibest, jbest, kbest, pbest, qbest, rbest;
-  double       vbest;
+  /* i, j and k are each set only inside a switch whose default arm is
+     assert(0); that arm disappears under NDEBUG, so give them the same
+     defined starting value k already had. */
+  int    i = 0, j = 0, k = 0, p, q, r, ibest, jbest, kbest, pbest, qbest, rbest;
+  double vbest;
 
   if (icod == NULL || jcod == NULL || kcod == NULL)
     return; /* bad */
@@ -3579,7 +3582,10 @@ nifti_mat44_to_orientation(mat44 R, int * icod, int * jcod, int * kcod)
 {
   float xi, xj, xk, yi, yj, yk, zi, zj, zk, val, detQ, detP;
   mat33 P, Q, M;
-  int   i, j, k = 0, p, q, r, ibest, jbest, kbest, pbest, qbest, rbest;
+  /* i, j and k are each set only inside a switch whose default arm is
+     assert(0); that arm disappears under NDEBUG, so give them the same
+     defined starting value k already had. */
+  int   i = 0, j = 0, k = 0, p, q, r, ibest, jbest, kbest, pbest, qbest, rbest;
   float vbest;
 
   if (icod == NULL || jcod == NULL || kcod == NULL)

@@ -2303,7 +2303,7 @@ nifti_mat33_colnorm(mat33 A) /* max column norm of 3x3 matrix */
 mat33
 nifti_mat33_mul(mat33 A, mat33 B) /* multiply 2 3x3 matrices */
 {
-  mat33 C;
+  mat33 C = { { { 0.0f } } };
   int   i, j;
   for (i = 0; i < 3; i++)
     for (j = 0; j < 3; j++)
@@ -2406,7 +2406,10 @@ nifti_mat44_to_orientation(mat44 R, int * icod, int * jcod, int * kcod)
 {
   float xi, xj, xk, yi, yj, yk, zi, zj, zk, val, detQ, detP;
   mat33 P, Q, M;
-  int   i, j, k = 0, p, q, r, ibest, jbest, kbest, pbest, qbest, rbest;
+  /* i, j and k are each set only inside a switch whose default arm is
+     assert(0); that arm disappears under NDEBUG, so give them the same
+     defined starting value k already had. */
+  int   i = 0, j = 0, k = 0, p, q, r, ibest, jbest, kbest, pbest, qbest, rbest;
   float vbest;
 
   if (icod == NULL || jcod == NULL || kcod == NULL)

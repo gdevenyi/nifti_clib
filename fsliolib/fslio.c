@@ -2195,7 +2195,7 @@ FslGetIntensityScaling(FSLIO * fslio, float * slope, float * intercept)
 mat33
 mat44_to_mat33(mat44 x)
 {
-  mat33 y;
+  mat33 y = { { { 0.0f } } };
   int   i, j;
   for (i = 0; i < 3; i++)
   {
