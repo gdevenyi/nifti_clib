@@ -2284,6 +2284,7 @@ act_add_exts(nt_opts * opts)
 
       if (nifti_add_extension(nim, ext, elen, opts->etypes.list[ec]))
       {
+        free(edata); /* may hold the file contents read just above */
         nifti_image_free(nim);
         return 1;
       }
