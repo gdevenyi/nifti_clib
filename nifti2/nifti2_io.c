@@ -6748,6 +6748,12 @@ nifti_read_n2_hdr(const char * hname, int * swapped, int check)
       return NULL;
 
     hptr = (nifti_2_header *)malloc(sizeof(nifti_2_header));
+    if (!hptr)
+    {
+      fprintf(stderr, "** nifti_read_header: failed to alloc nifti_2_header\n");
+      free(nim);
+      return NULL;
+    }
     rv = nifti_convert_nim2n2hdr(nim, hptr);
     free(nim);
 
@@ -9534,6 +9540,12 @@ doPigz2(nifti_image * nim, struct nifti_2_header nhdr, const nifti_brick_list * 
 #    endif
   znzFile fp;
   fp = (znzFile)calloc(1, sizeof(struct znzptr));
+  if (!fp)
+  {
+    fprintf(stderr, "** doPigz: failed to alloc znzptr\n");
+    pclose(pigzPipe);
+    return 1;
+  }
   fp->zfptr = NULL;
   fp->withz = 0;
   fp->nzfptr = pigzPipe;
@@ -9568,6 +9580,12 @@ doPigz(nifti_image * nim, struct nifti_1_header nhdr, const nifti_brick_list * N
 #    endif
   znzFile fp;
   fp = (znzFile)calloc(1, sizeof(struct znzptr));
+  if (!fp)
+  {
+    fprintf(stderr, "** doPigz: failed to alloc znzptr\n");
+    pclose(pigzPipe);
+    return 1;
+  }
   fp->zfptr = NULL;
   fp->withz = 0;
   fp->nzfptr = pigzPipe;

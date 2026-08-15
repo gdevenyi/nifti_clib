@@ -6961,6 +6961,12 @@ doPigz2(nifti_image * nim, struct nifti_1_header nhdr, const nifti_brick_list * 
 #    endif
   znzFile fp;
   fp = (znzFile)calloc(1, sizeof(struct znzptr));
+  if (!fp)
+  {
+    fprintf(stderr, "** doPigz: failed to alloc znzptr\n");
+    pclose(pigzPipe);
+    return 1;
+  }
   fp->zfptr = NULL;
   fp->withz = 0;
   fp->nzfptr = pigzPipe;
@@ -6995,6 +7001,12 @@ doPigz(nifti_image * nim, struct nifti_1_header nhdr, const nifti_brick_list * N
 #    endif
   znzFile fp;
   fp = (znzFile)calloc(1, sizeof(struct znzptr));
+  if (!fp)
+  {
+    fprintf(stderr, "** doPigz: failed to alloc znzptr\n");
+    pclose(pigzPipe);
+    return 1;
+  }
   fp->zfptr = NULL;
   fp->withz = 0;
   fp->nzfptr = pigzPipe;

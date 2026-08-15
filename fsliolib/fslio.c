@@ -515,6 +515,8 @@ FslInit(void)
 {
   FSLIO * fslio;
   fslio = (FSLIO *)calloc(1, sizeof(FSLIO));
+  if (fslio == NULL)
+    FSLIOERR("FslInit: failed to allocate FSLIO");
   FslSetInit(fslio);
   return fslio;
 }
@@ -689,6 +691,8 @@ FslCheckForMultipleFileNames(const char * filename)
   int   singlecount = 0, hdrcount = 0, imgcount = 0, ambiguous = 0;
   basename = nifti_makebasename(filename);
   tmpname = (char *)calloc(strlen(basename) + 10, sizeof(char));
+  if (tmpname == NULL)
+    FSLIOERR("FslGetHdrImgNames: failed to allocate tmpname");
 
   strcpy(tmpname, basename);
   strcat(tmpname, ".nii");
@@ -772,6 +776,8 @@ check_for_multiple_filenames(const char * filename)
   { /* take action */
     basename = nifti_makebasename(filename);
     tmpname = (char *)calloc(strlen(basename) + 10, sizeof(char));
+    if (tmpname == NULL)
+      FSLIOERR("check_for_multiple_filenames: failed to allocate tmpname");
     fprintf(stderr, "\n\n\nWARNING!!!! Multiple image files detected:\n");
     /* list the offending files */
     strcpy(tmpname, basename);
@@ -1056,7 +1062,6 @@ FslReadAllVolumes(FSLIO * fslio, char * filename)
   if (fslio->niftiptr == NULL)
   {
     FSLIOERR("FslReadAllVolumes: error reading NIfTI image");
-    return (NULL);
   }
 
   FslSetFileType(fslio, fslio->niftiptr->nifti_type);
@@ -1178,6 +1183,8 @@ FslWriteVolumes(FSLIO * fslio, const void * buffer, size_t nvols)
       short        nx, ny, nz, nv;
       inbuf = (const char *)buffer;
       tmpbuf = (char *)calloc(nbytes, 1);
+      if (tmpbuf == NULL)
+        FSLIOERR("FslWriteVolumes: failed to allocate swap buffer");
       FslGetDim(fslio, &nx, &ny, &nz, &nv);
       nrows = nbytes / (nx * bpv);
       for (n = 0; n < nrows; n++)
@@ -2429,6 +2436,8 @@ FslClose(FSLIO * fslio)
 
     /* read in the old header, change the origin and write it out again */
     hdr = (struct dsr *)calloc(1, sizeof(struct dsr));
+    if (hdr == NULL)
+      FSLIOERR("FslReadHeader: failed to allocate dsr");
     FslReadRawHeader(hdr, fslio->niftiptr->fname);
     if (fslio->niftiptr->byteorder != nifti_short_order())
     {
@@ -2594,7 +2603,6 @@ FslReadHeader(char * fname)
   if (fslio->niftiptr == NULL)
   {
     FSLIOERR("FslReadHeader: error reading header information");
-    return (NULL);
   }
 
   fslio->file_mode = FslGetReadFileType(fslio);
