@@ -27,6 +27,39 @@
 #include "fslio.h"
 #include "assert.h"
 
+
+/*---------------------------------------------------------------------------*/
+/* Prototypes for functions this library exports but that no installed header
+   has ever declared.  Declaring them here satisfies -Wmissing-prototypes
+   without changing the library's interface: marking them `static` would
+   delete the symbols that downstream code links against, and moving them
+   into a public header would enlarge the published API.  If any of these
+   is meant to be public it should be moved to the header deliberately, and
+   if it is meant to be private it should be made static deliberately -- but
+   either is an interface decision, not a warning fix.                       */
+int
+FslIsValidFileType(int filetype);
+int
+FslGetFileType2(const FSLIO * fslio, int quiet);
+int
+FslFileType(const char * fname);
+int
+FslGetReadFileType(const FSLIO * fslio);
+void
+FslGetHdrImgNames(const char * filename, const FSLIO * fslio, char ** hdrname, char ** imgname);
+void
+FslInit4Write(FSLIO * fslio, const char * filename, int ft);
+int
+fsl_fileexists(const char * fname);
+int
+check_for_multiple_filenames(const char * filename);
+void
+FslSetVoxUnits(FSLIO * fslio, const char * units);
+void
+FslGetVoxUnits(FSLIO * fslio, char * units);
+void
+FslSetIntensityScaling(FSLIO * fslio, float slope, float intercept);
+
 static int FslIgnoreMFQ = 0;
 static int FslOverrideOutputType = -1;
 

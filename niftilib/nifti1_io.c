@@ -417,6 +417,19 @@ static const nifti_type_ele nifti_type_list[] = {
 /* clang-format on */
 
 /*---------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*/
+/* Prototypes for functions this library exports but that no installed header
+   has ever declared.  Declaring them here satisfies -Wmissing-prototypes
+   without changing the library's interface: marking them `static` would
+   delete the symbols that downstream code links against, and moving them
+   into a public header would enlarge the published API.  If any of these
+   is meant to be public it should be moved to the header deliberately, and
+   if it is meant to be private it should be made static deliberately -- but
+   either is an interface decision, not a warning fix.                       */
+int
+nifti_fileexists(const char * fname);
+
 /* prototypes for internal functions - not part of exported library          */
 
 /* extension routines */
