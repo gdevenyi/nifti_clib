@@ -376,7 +376,7 @@ axml_read_buf(const char * buf_in, int64_t bin_len)
 
     /* decide how much to copy and copy */
     if (bin_remain >= bsize)
-      blen = bsize;
+      blen = (unsigned)bsize;
     else
       blen = (unsigned)bin_remain;
 

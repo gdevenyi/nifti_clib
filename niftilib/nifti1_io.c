@@ -666,7 +666,7 @@ update_nifti_image_for_brick_list(nifti_image * nim, int nbricks)
   /* compute nvox                                                       */
   /* do not rely on dimensions above dim[0]         16 Nov 2005 [rickr] */
   for (nim->nvox = 1, ndim = 1; ndim <= nim->dim[0]; ndim++)
-    nim->nvox *= nim->dim[ndim];
+    nim->nvox *= (size_t)nim->dim[ndim];
 
   /* update the dimensions to 4 or lower */
   for (ndim = 4; (ndim > 1) && (nim->dim[ndim] <= 1); ndim--)
@@ -768,7 +768,7 @@ nifti_update_dims_from_array(nifti_image * nim)
   nim->dw = nim->pixdim[7];
 
   for (c = 1, nim->nvox = 1; c <= nim->dim[0]; c++)
-    nim->nvox *= nim->dim[c];
+    nim->nvox *= (size_t)nim->dim[c];
 
   /* compute ndim, assuming it can be no larger than the old one */
   for (ndim = nim->dim[0]; (ndim > 1) && (nim->dim[ndim] <= 1); ndim--)
@@ -899,7 +899,8 @@ nifti_free_NBL(nifti_brick_list * NBL)
     NBL->bricks = NULL;
   }
 
-  NBL->bsize = NBL->nbricks = 0;
+  NBL->nbricks = 0;
+  NBL->bsize = 0;
 }
 
 
@@ -963,9 +964,9 @@ nifti_load_NBL_bricks(nifti_image * nim, const int * slist, const int * sindex, 
     {
 
       /* if we are not looking at the correct sub-brick, scan forward */
-      if (fposn != (oposn + isrc * NBL->bsize))
+      if (fposn != (oposn + (size_t)isrc * NBL->bsize))
       {
-        fposn = oposn + isrc * NBL->bsize;
+        fposn = oposn + (size_t)isrc * NBL->bsize;
         if (znzseek(fp, (long)fposn, SEEK_SET) < 0)
         {
           fprintf(stderr, "** failed to locate brick %d in file '%s'\n", isrc, nim->iname ? nim->iname : nim->fname);
@@ -1041,7 +1042,8 @@ nifti_alloc_NBL_mem(const nifti_image * nim, int nbricks, nifti_brick_list * nbl
       }
       free(nbl->bricks);
       nbl->bricks = NULL;
-      nbl->bsize = nbl->nbricks = 0;
+      nbl->nbricks = 0;
+      nbl->bsize = 0;
       return -1;
     }
   }
@@ -4639,7 +4641,7 @@ nifti_convert_nhdr2nim(struct nifti_1_header nhdr, const char * fname)
   nim->nw = nim->dim[7] = nhdr.dim[7];
 
   for (ii = 1, nim->nvox = 1; ii <= nhdr.dim[0]; ii++)
-    nim->nvox *= nhdr.dim[ii];
+    nim->nvox *= (size_t)nhdr.dim[ii];
 
   /**- set the type of data in voxels and how many bytes per voxel */
 
@@ -8254,7 +8256,8 @@ nifti_image_from_ascii(const char * str, int * bytes_read)
   nim->dim[7] = nim->nw;
   nim->pixdim[7] = nim->dw;
 
-  nim->nvox = (size_t)nim->nx * nim->ny * nim->nz * nim->nt * nim->nu * nim->nv * nim->nw;
+  nim->nvox = (size_t)nim->nx * (size_t)nim->ny * (size_t)nim->nz * (size_t)nim->nt * (size_t)nim->nu *
+              (size_t)nim->nv * (size_t)nim->nw;
 
   if (nim->qform_code > 0)
     nim->qto_xyz = nifti_quatern_to_mat44(nim->quatern_b,
@@ -8391,7 +8394,7 @@ nifti_nim_has_valid_dims(nifti_image * nim, int complain)
   for (c = 1; c <= nim->dim[0]; c++)
   {
     if (nim->dim[c] > 0)
-      prod *= nim->dim[c];
+      prod *= (size_t)nim->dim[c];
     else
     {
       if (!complain)
@@ -8711,12 +8714,12 @@ nifti_read_subregion_image(nifti_image * nim, const int * start_index, const int
   /* get strides*/
   compute_strides(strides, image_size, nim->nbyper);
 
-  total_alloc_size = nim->nbyper; /* size of pixel */
+  total_alloc_size = (size_t)nim->nbyper; /* size of pixel */
 
   /* find alloc size */
   for (i = 0; i < nim->ndim; i++)
   {
-    total_alloc_size *= region_size[i];
+    total_alloc_size *= (size_t)region_size[i];
   }
   /* allocate buffer, if necessary */
   if (*data == 0)
@@ -8853,12 +8856,12 @@ rci_read_data(nifti_image * nim,
 
   /* compute size of sub-brick: all dimensions below pivot */
   for (c = 1, sublen = 1; c < *pivots; c++)
-    sublen *= nim->dim[c];
+    sublen *= (size_t)nim->dim[c];
 
   /* compute number of values to read, i.e. remaining prods */
   for (c = 1, read_size = 1; c < nprods; c++)
-    read_size *= prods[c];
-  read_size *= nim->nbyper; /* and multiply by bytes per voxel */
+    read_size *= (size_t)prods[c];
+  read_size *= (size_t)nim->nbyper; /* and multiply by bytes per voxel */
 
   /* now repeatedly compute offsets, and recursively read */
   for (c = 0; c < prods[0]; c++)
@@ -8866,8 +8869,8 @@ rci_read_data(nifti_image * nim,
     /* offset is (c * sub-block size (including pivot dim))   */
     /*         + (dims[] index into pivot sub-block)          */
     /* the unneeded multiplication is to make this more clear */
-    offset = (size_t)c * sublen * nim->dim[*pivots] + (size_t)sublen * dims[*pivots];
-    offset *= nim->nbyper;
+    offset = (size_t)c * (size_t)sublen * (size_t)nim->dim[*pivots] + (size_t)sublen * (size_t)dims[*pivots];
+    offset *= (size_t)nim->nbyper;
 
     if (g_opts.debug > 3)
       fprintf(stderr,
@@ -8875,10 +8878,11 @@ rci_read_data(nifti_image * nim,
               (unsigned)read_size,
               (unsigned)base_offset,
               (unsigned)offset,
-              (unsigned)(c * read_size));
+              (unsigned)((size_t)c * read_size));
 
     /* now read the next level down, adding this offset */
-    if (rci_read_data(nim, pivots + 1, prods + 1, nprods - 1, dims, data + c * read_size, fp, base_offset + offset) < 0)
+    if (rci_read_data(
+          nim, pivots + 1, prods + 1, nprods - 1, dims, data + (size_t)c * read_size, fp, base_offset + offset) < 0)
       return -1;
   }
 
