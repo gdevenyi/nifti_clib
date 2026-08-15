@@ -4758,7 +4758,7 @@ nifti_image* nifti_convert_n1hdr2nim(nifti_1_header nhdr, const char * fname)
       *   the qform_code will be zero, at which point you can check
       *   analyze75_orient if you care to.
       */
-     unsigned char c = *((char *)(&nhdr.qform_code));
+     unsigned char c = *((unsigned char *)(&nhdr.qform_code));
      nim->analyze75_orient = (analyze_75_orient_code)c;
      }
    if( doswap ) {
@@ -5822,7 +5822,7 @@ void * nifti_read_header( const char *hname, int *nver, int check )
    }
 
    /* find out what type of header we have */
-   ni_ver = nifti_header_version((char *)&n1hdr, h1size);
+   ni_ver = nifti_header_version((char *)&n1hdr, (size_t)h1size);
    if( g_opts.debug > 2 )
       fprintf(stderr,"-- %s: NIFTI version = %d\n", fname, ni_ver);
 
@@ -5975,7 +5975,7 @@ nifti_image *nifti_image_read( const char *hname , int read_data )
    }
 
    /* find out what type of header we have */
-   ni_ver = nifti_header_version((char *)&n1hdr, h1size);
+   ni_ver = nifti_header_version((char *)&n1hdr, (size_t)h1size);
    if( g_opts.debug > 2 )
       fprintf(stderr,"-- %s: NIFTI version = %d\n", fname, ni_ver);
 
@@ -6376,7 +6376,7 @@ static int nifti_add_exten_to_list( nifti1_extension *  new_ext,
 
    /* if an old list exists, copy the pointers and free the list */
    if( tmplist ){
-      memcpy(*list, tmplist,(size_t)((new_length-1)*sizeof(nifti1_extension)));
+      memcpy(*list, tmplist,(size_t)(new_length-1)*sizeof(nifti1_extension));
       free(tmplist);
    }
 
@@ -6920,7 +6920,7 @@ if( g_opts.fix_floats )
     case NIFTI_TYPE_FLOAT32:
     case NIFTI_TYPE_COMPLEX64:{
         float *far = (float *)dataptr ; int64_t jj,nj ;
-        nj = ntot / sizeof(float) ;
+        nj = ntot / (int64_t)sizeof(float) ;
         for( jj=0 ; jj < nj ; jj++ )   /* count fixes 30 Nov 2004 [rickr] */
            if( !IS_GOOD_FLOAT(far[jj]) ){
               far[jj] = 0 ;
@@ -6932,7 +6932,7 @@ if( g_opts.fix_floats )
     case NIFTI_TYPE_FLOAT64:
     case NIFTI_TYPE_COMPLEX128:{
         double *far = (double *)dataptr ; int64_t jj,nj ;
-        nj = ntot / sizeof(double) ;
+        nj = ntot / (int64_t)sizeof(double) ;
         for( jj=0 ; jj < nj ; jj++ )   /* count fixes 30 Nov 2004 [rickr] */
            if( !IS_GOOD_FLOAT(far[jj]) ){
               far[jj] = 0 ;
