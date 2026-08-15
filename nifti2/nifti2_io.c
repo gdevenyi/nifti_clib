@@ -4756,8 +4756,14 @@ nifti_findhdrname(const char * fname)
 #ifdef FSLSTYLE
   if (nifti_fileexists(hdrname))
   {
-    free(basename);
     char * gzname = (char *)calloc(strlen(hdrname) + 8, sizeof(char));
+    if (!gzname)
+    {
+      fprintf(stderr, "** nifti_findhdrname: failed to alloc gzname\n");
+      free(basename);
+      free(hdrname);
+      return NULL;
+    }
     strcpy(gzname, hdrname);
     strcat(gzname, extzip);
     if (nifti_fileexists(gzname))
@@ -4766,9 +4772,12 @@ nifti_findhdrname(const char * fname)
               "Image Exception : Multiple possible filenames detected for basename (*.nii, *.nii.gz): %s\n",
               basename);
       free(gzname);
-      exit(134);
+      free(basename);
+      free(hdrname);
+      return NULL;
     }
     free(gzname);
+    free(basename);
     return hdrname;
   }
 #else
@@ -7367,14 +7376,6 @@ nifti_image_read(const char * hname, int read_data)
     return NULL;
   }
 
-#ifdef REJECT_COMPLEX
-  if ((nim->datatype == DT_COMPLEX64) || (nim->datatype == DT_COMPLEX128) || (nim->datatype == DT_COMPLEX256))
-  {
-    fprintf(stderr, "Image Exception Unsupported datatype (COMPLEX64): use fslcomplex to manipulate: %s\n", hname);
-    exit(13);
-  }
-#endif
-
   if (nim == NULL)
   {
     znzclose(fp); /* close the file */
@@ -7383,6 +7384,18 @@ nifti_image_read(const char * hname, int read_data)
     free(hfile); /* had to save this for debug message */
     return NULL;
   }
+
+#ifdef REJECT_COMPLEX
+  /* must follow the NULL check above: this dereferences nim */
+  if ((nim->datatype == DT_COMPLEX64) || (nim->datatype == DT_COMPLEX128) || (nim->datatype == DT_COMPLEX256))
+  {
+    fprintf(stderr, "Image Exception: unsupported datatype (COMPLEX): use fslcomplex to manipulate: %s\n", hname);
+    nifti_image_free(nim);
+    znzclose(fp);
+    free(hfile);
+    return NULL;
+  }
+#endif
 
   if (g_opts.debug > 3)
   {
