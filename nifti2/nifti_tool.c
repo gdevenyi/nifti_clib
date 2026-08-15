@@ -2368,7 +2368,7 @@ read_file_text(const char * filename, int * length)
     return NULL;
   }
 
-  bytes = fread(text, sizeof(char), len64, fp);
+  bytes = fread(text, sizeof(char), (size_t)len64, fp);
   fclose(fp); /* in any case */
 
   if (bytes != (size_t)len64)

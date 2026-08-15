@@ -218,9 +218,9 @@ znzwrite(const void * buf, size_t size, size_t nmemb, znzFile file)
 
       /* gzread returns 0 on error, but in case that ever changes... */
       if (nwritten < 0)
-        return nwritten;
+        return (size_t)nwritten; /* see the note in znzread() */
 
-      remain -= nwritten;
+      remain -= (size_t)nwritten;
       cbuf += nwritten;
 
       /* require writing n2write bytes, so we don't get stuck */

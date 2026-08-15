@@ -7147,7 +7147,7 @@ nifti_read_header(const char * hname, int * nver, int check)
   }
 
   /**- next read into nifti_1_header and determine nifti type */
-  ii = (int)znzread(&n1hdr, 1, h1size, fp);
+  ii = (int)znzread(&n1hdr, 1, (size_t)h1size, fp);
 
   if (ii < (int)h1size)
   { /* failure? */
@@ -7330,7 +7330,7 @@ nifti_image_read(const char * hname, int read_data)
   h2size = sizeof(nifti_2_header);
 
   /**- next read into nifti_1_header and determine nifti type */
-  ii = (int)znzread(&n1hdr, 1, h1size, fp);
+  ii = (int)znzread(&n1hdr, 1, (size_t)h1size, fp);
 
   if (ii < (int)h1size)
   { /* failure? */
@@ -7679,7 +7679,7 @@ nifti_read_extensions(nifti_image * nim, znzFile fp, int64_t remain)
     return 0;
   }
 
-  count = znzread(extdr.extension, 1, 4, fp); /* get extender */
+  count = (int64_t)znzread(extdr.extension, 1, 4, fp); /* get extender */
 
   if (count < 4)
   {
@@ -8377,7 +8377,7 @@ nifti_read_buffer(znzFile fp, void * dataptr, int64_t ntot, nifti_image * nim)
     return -1;
   }
 
-  ii = znzread(dataptr, 1, ntot, fp); /* data input */
+  ii = (int64_t)znzread(dataptr, 1, (size_t)ntot, fp); /* data input */
 
   /* if read was short, fail */
   if (ii < ntot)
@@ -8567,7 +8567,7 @@ nifti_write_buffer(znzFile fp, const void * buffer, int64_t numbytes)
     fprintf(stderr, "** ERROR: nifti_write_buffer: null file pointer\n");
     return 0;
   }
-  ss = znzwrite(buffer, 1, numbytes, fp);
+  ss = (int64_t)znzwrite(buffer, 1, (size_t)numbytes, fp);
   return ss;
 }
 
@@ -9774,9 +9774,9 @@ nifti_image_write_engine(nifti_image *            nim,
   /* write the header and extensions */
 
   if (nver == 2)
-    ss = znzwrite(&n2hdr, 1, hsize, fp); /* write header */
+    ss = (int64_t)znzwrite(&n2hdr, 1, (size_t)hsize, fp); /* write header */
   else
-    ss = znzwrite(&n1hdr, 1, hsize, fp); /* write header */
+    ss = (int64_t)znzwrite(&n1hdr, 1, (size_t)hsize, fp); /* write header */
 
   if (ss < hsize)
   {

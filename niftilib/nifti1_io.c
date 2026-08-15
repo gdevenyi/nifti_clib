@@ -6298,13 +6298,13 @@ nifti_write_all_data(znzFile fp, nifti_image * nim, const nifti_brick_list * NBL
       return -1;
     }
 
-    ss = nifti_write_buffer(fp, nim->data, nim->nbyper * nim->nvox);
-    if (ss < nim->nbyper * nim->nvox)
+    ss = nifti_write_buffer(fp, nim->data, (size_t)nim->nbyper * nim->nvox);
+    if (ss < (size_t)nim->nbyper * nim->nvox)
     {
       fprintf(stderr,
               "** ERROR: NWAD: wrote only %u of %u bytes to file\n",
               (unsigned)ss,
-              (unsigned)(nim->nbyper * nim->nvox));
+              (unsigned)((size_t)nim->nbyper * nim->nvox));
       return -1;
     }
 
@@ -6397,7 +6397,7 @@ nifti_write_extensions(znzFile fp, nifti_image * nim)
     }
     if (ok)
     {
-      size = (int)nifti_write_buffer(fp, list->edata, list->esize - 8);
+      size = (int)nifti_write_buffer(fp, list->edata, (size_t)(list->esize - 8));
       ok = (size == list->esize - 8);
     }
 
@@ -8772,7 +8772,7 @@ nifti_read_subregion_image(nifti_image * nim, const int * start_index, const int
                          (m * strides[2]) + (n * strides[1]) + (si[0] * strides[0]);
                 znzseek(fp, offset, SEEK_SET);     /* seek to current row */
                 read_amount = rs[0] * nim->nbyper; /* read a row of the subregion*/
-                nread = (int)nifti_read_buffer(fp, readptr, read_amount, nim);
+                nread = (int)nifti_read_buffer(fp, readptr, (size_t)read_amount, nim);
                 if (nread != read_amount)
                 {
                   if (g_opts.debug > 0)
