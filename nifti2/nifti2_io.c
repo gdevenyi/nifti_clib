@@ -9507,6 +9507,15 @@ nifti_image_write_hdr_img2(nifti_image *            nim,
 
 #ifdef PIGZ
 #  ifdef HAVE_ZLIB
+/* These are exported by the library when it is built with PIGZ support, and
+   are declared in no header.  See the note on the same situation earlier in
+   this file: a file-local prototype satisfies -Wmissing-prototypes without
+   either dropping the symbols or publishing them.                         */
+int
+doPigz2(nifti_image * nim, struct nifti_2_header nhdr, const nifti_brick_list * NBL);
+int
+doPigz(nifti_image * nim, struct nifti_1_header nhdr, const nifti_brick_list * NBL);
+
 int
 doPigz2(nifti_image * nim, struct nifti_2_header nhdr, const nifti_brick_list * NBL)
 {
@@ -9609,8 +9618,12 @@ nifti_image_write_engine(nifti_image *            nim,
                          znzFile *                imgfile,
                          const nifti_brick_list * NBL)
 {
-  nifti_1_header n1hdr;
-  nifti_2_header n2hdr;
+  /* Only one of these is filled in, chosen by nim->nifti_type and recorded
+     in nver; every later use selects on nver.  clang cannot see that
+     correlation, so initialise both rather than pass an indeterminate
+     struct by value to doPigz()/doPigz2(). */
+  nifti_1_header n1hdr = { 0 };
+  nifti_2_header n2hdr = { 0 };
   znzFile        fp = NULL;
   int64_t        ss;
   int            write_data, leave_open;

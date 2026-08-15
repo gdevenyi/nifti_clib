@@ -6934,6 +6934,15 @@ nifti_image_write_hdr_img2(nifti_image *            nim,
 
 #ifdef PIGZ
 #  ifdef HAVE_ZLIB
+/* These are exported by the library when it is built with PIGZ support, and
+   are declared in no header.  See the note on the same situation earlier in
+   this file: a file-local prototype satisfies -Wmissing-prototypes without
+   either dropping the symbols or publishing them.                         */
+int
+doPigz2(nifti_image * nim, struct nifti_1_header nhdr, const nifti_brick_list * NBL);
+int
+doPigz(nifti_image * nim, struct nifti_1_header nhdr, const nifti_brick_list * NBL);
+
 int
 doPigz2(nifti_image * nim, struct nifti_1_header nhdr, const nifti_brick_list * NBL)
 {
