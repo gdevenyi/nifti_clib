@@ -220,7 +220,7 @@ static int64_t
 loc_strnlen(const char * str, int64_t maxlen);
 static afni_xml_t *
 make_afni_xml(const char * ename, const char ** attr);
-static char *
+static const char *
 strip_whitespace(const char * str, int slen);
 
 /*----------------------- main I/O functions ---------------------------*/
@@ -1079,7 +1079,7 @@ free_whitespace(void)
 }
 
 /* if slen == 0, use entire length */
-static char *
+static const char *
 strip_whitespace(const char * str, int slen)
 {
   static char * buf = NULL;
@@ -1097,13 +1097,13 @@ strip_whitespace(const char * str, int slen)
 
   /* if string is long, forget it */
   if (!str || slen > 1024)
-    return (char *)str;
+    return str;
 
   len = strlen(str);
   if (slen > 0 && slen < len)
     len = slen;
   if (len <= 0)
-    return (char *)str;
+    return str;
 
   /* make sure we have local space */
   if (len > blen)
@@ -1112,7 +1112,7 @@ strip_whitespace(const char * str, int slen)
     if (!buf)
     {
       fprintf(stderr, "** failed to alloc wspace buf of len %d\n", len + 1);
-      return (char *)str;
+      return str;
     }
     blen = len;
   }
