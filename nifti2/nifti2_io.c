@@ -3757,16 +3757,21 @@ char * nifti_findhdrname(const char* fname)
    strcat(hdrname,elist[efirst]);
    #ifdef FSLSTYLE
    if (nifti_fileexists(hdrname)) {
-      free(basename);
       char *gzname = (char *)calloc(sizeof(char),strlen(hdrname)+8);
+      if( !gzname ){
+         fprintf(stderr,"** nifti_findhdrname: failed to alloc gzname\n");
+         free(basename); free(hdrname);
+         return NULL;
+      }
       strcpy(gzname, hdrname);
       strcat(gzname,extzip);
       if (nifti_fileexists(gzname)) {
          fprintf(stderr,"Image Exception : Multiple possible filenames detected for basename (*.nii, *.nii.gz): %s\n", basename);
-         free(gzname);
-         exit(134);
+         free(gzname); free(basename); free(hdrname);
+         return NULL;
       }
       free(gzname);
+      free(basename);
       return hdrname;
    }
    #else
@@ -5980,13 +5985,6 @@ nifti_image *nifti_image_read( const char *hname , int read_data )
       znzclose(fp);  free(hfile);  return NULL;
    }
 
-   #ifdef REJECT_COMPLEX
-   if ((nim->datatype == DT_COMPLEX64) || (nim->datatype == DT_COMPLEX128) || (nim->datatype == DT_COMPLEX256)) {
-      fprintf(stderr,"Image Exception Unsupported datatype (COMPLEX64): use fslcomplex to manipulate: %s\n", hname);
-      exit(13);
-    }
-    #endif
-
    if( nim == NULL ){
       znzclose( fp ) ;                                   /* close the file */
       if( g_opts.debug > 0 )
@@ -5994,6 +5992,17 @@ nifti_image *nifti_image_read( const char *hname , int read_data )
       free(hfile); /* had to save this for debug message */
       return NULL;
    }
+
+   #ifdef REJECT_COMPLEX
+   /* must follow the NULL check above: this dereferences nim */
+   if ((nim->datatype == DT_COMPLEX64) || (nim->datatype == DT_COMPLEX128) || (nim->datatype == DT_COMPLEX256)) {
+      fprintf(stderr,"Image Exception Unsupported datatype (COMPLEX): use fslcomplex to manipulate: %s\n", hname);
+      nifti_image_free(nim);
+      znzclose(fp);
+      free(hfile);
+      return NULL;
+   }
+   #endif
 
    if( g_opts.debug > 3 ){
       fprintf(stderr,"+d nifti_image_read(), have nifti image:\n");
