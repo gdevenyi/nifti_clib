@@ -112,6 +112,17 @@ int axml_set_buf_size( int val )
 FILE * axml_get_wstream( void      ) { return gAXD.wstream; }
 int    axml_set_wstream( FILE * fp ) { gAXD.wstream = fp; return 0; }
 
+
+/*---------------------------------------------------------------------------*/
+/* Prototypes for functions this library exports but that no installed header
+   has ever declared.  Declaring them here satisfies -Wmissing-prototypes
+   without changing the library's interface: marking them `static` would
+   delete symbols that downstream code links against, and moving them into a
+   public header would enlarge the published API.  Either is an interface
+   decision, not a warning fix.                                              */
+afni_xml_t * axml_recur_find_xml(int (*func)(afni_xml_t *, int), afni_xml_t * ax,
+                                 int depth, int max_depth);
+
 /*----------------------- local prototypes -----------------------------*/
 
 static XML_Parser init_xml_parser   (void *);
