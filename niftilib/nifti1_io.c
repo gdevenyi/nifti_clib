@@ -7081,7 +7081,9 @@ int nifti_read_collapsed_image( nifti_image * nim, const int dims [8],
       fprintf(stderr,"+d read %d bytes of collapsed image from %s\n",
               bytes, nim->fname);
 
-   return bytes;
+   /* nifti_read_subregion_image() is declared to return int; a subregion
+      larger than 2GB cannot be requested through its int region_size. */
+   return (int)bytes;
 }
 
 
@@ -7305,7 +7307,9 @@ int nifti_read_subregion_image( nifti_image * nim,
     }
   }
   znzclose(fp);
-  return bytes;
+  /* nifti_read_subregion_image() is declared to return int; a subregion
+     larger than 2GB cannot be requested through its int region_size. */
+  return (int)bytes;
 }
 
 
