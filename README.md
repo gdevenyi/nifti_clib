@@ -84,10 +84,73 @@ packaging   | spec file for building RPMs, and template package description for 
 
 ## Instructions to build
 
-command     |  description
-------------|-------------
-"make all"  | results will be left in the directories: bin/ include/ lib/
-"make help" | will show more build options
+The project builds with CMake:
+
+```sh
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
+ctest --test-dir build --output-on-failure
+```
+
+Useful options: `-DBUILD_SHARED_LIBS=ON`, `-DUSE_CIFTI_CODE=ON` (needs
+expat), `-DUSE_FSL_CODE=ON`, and `-DDOWNLOAD_TEST_DATA=OFF` together with
+`ctest -LE NEEDS_DATA` for an offline build.
+
+The top-level GNU `Makefile` still exists and still mostly works, but it
+is not maintained and does not build the nifti2 or cifti libraries.
+
+## Checking the code
+
+`./format.sh` applies the project code style and `./format.sh --check`
+reports any file that does not match; CI runs the latter.  It fetches the
+pinned clang-format via `uv` or `pipx` so that every developer and CI
+agree on the output.
+
+To build with the project warning set treated as errors, as CI does:
+
+```sh
+cmake -S . -B build -DNIFTI_WARNINGS_AS_ERRORS=ON
+```
+
+For clang-tidy, configure with `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` and
+run `run-clang-tidy -p build -j "$(nproc)" -quiet`.
+
+The sanitizers are the quickest memory check:
+
+```sh
+cmake -S . -B build-asan -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-sanitize-recover=all" \
+      -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+cmake --build build-asan -j && ctest --test-dir build-asan --output-on-failure
+```
+
+For valgrind:
+
+```sh
+ctest --test-dir build -T memcheck \
+      --overwrite MemoryCheckCommandOptions="--trace-children=yes --leak-check=full"
+```
+
+`--trace-children=yes` matters: many tests are shell scripts that exec
+the tools, and without it valgrind only inspects the shell.
+
+Note that valgrind needs the C library's debug symbols and refuses to
+start without them.  Distributions that ship a stripped `ld.so` and no
+debuginfo package for it -- Arch and its derivatives among them -- cannot
+run it at all, and `DEBUGINFOD_URLS` does not help because those builds
+are not published to any debuginfod server.  Run it in a container
+instead:
+
+```sh
+docker run --rm -v "$PWD":/src:ro -w /work ubuntu:24.04 bash -c '
+  apt-get update && apt-get install -y build-essential cmake ninja-build \
+      valgrind libc6-dbg zlib1g-dev libexpat1-dev
+  cp -r /src /work/nifti_clib
+  cmake -S /work/nifti_clib -B /work/build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+  cmake --build /work/build -j
+  ctest --test-dir /work/build -T memcheck -E install_linking \
+        --overwrite MemoryCheckCommandOptions="--trace-children=yes --leak-check=full"'
+```
 
 ![NIFTI ICON](https://avatars0.githubusercontent.com/u/45666806?s=200&v=4)
 
