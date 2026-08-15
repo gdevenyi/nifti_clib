@@ -145,7 +145,11 @@ size_t znzread(void* buf, size_t size, size_t nmemb, znzFile file)
     while( remain > 0 ) {
        n2read = (remain < ZNZ_MAX_BLOCK_SIZE) ? (unsigned)remain : ZNZ_MAX_BLOCK_SIZE;
        nread = gzread(file->zfptr, (void *)cbuf, n2read);
-       if( nread < 0 ) return nread; /* returns -1 on error */
+       /* gzread returns -1 on error.  This function returns size_t, so
+          -1 would arrive at the caller as SIZE_MAX, which is larger than
+          any length the caller asked for and so reads as a complete
+          transfer.  Return 0 instead: no members were processed. */
+       if( nread < 0 ) return 0;
 
        remain -= (size_t)nread;
        cbuf += nread;
@@ -178,8 +182,10 @@ size_t znzwrite(const void* buf, size_t size, size_t nmemb, znzFile file)
        n2write = (remain < ZNZ_MAX_BLOCK_SIZE) ? (unsigned)remain : ZNZ_MAX_BLOCK_SIZE;
        nwritten = gzwrite(file->zfptr, (const void *)cbuf, n2write);
 
-       /* gzread returns 0 on error, but in case that ever changes... */
-       if( nwritten < 0 ) return nwritten;
+       /* gzwrite returns 0 on error, but in case that ever changes...
+          As in znzread(), a negative value must not be returned from a
+          size_t function; 0 is the value that means nothing was written. */
+       if( nwritten < 0 ) return 0;
 
        remain -= (size_t)nwritten;
        cbuf += nwritten;
