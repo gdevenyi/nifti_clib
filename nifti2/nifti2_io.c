@@ -2663,7 +2663,10 @@ void nifti_dmat44_to_orientation( nifti_dmat44 R ,
 {
    double xi,xj,xk , yi,yj,yk , zi,zj,zk , val,detQ,detP ;
    nifti_dmat33 P , Q , M ;
-   int i,j,k=0,p,q,r , ibest,jbest,kbest,pbest,qbest,rbest ;
+   /* i, j and k are each set only inside a switch whose default arm is
+      assert(0); that arm disappears under NDEBUG, so give them the same
+      defined starting value k already had. */
+   int i=0,j=0,k=0,p,q,r , ibest,jbest,kbest,pbest,qbest,rbest ;
    double vbest ;
 
    if( icod == NULL || jcod == NULL || kcod == NULL ) return ; /* bad */
@@ -2846,7 +2849,10 @@ void nifti_mat44_to_orientation( mat44 R , int *icod, int *jcod, int *kcod )
 {
    float xi,xj,xk , yi,yj,yk , zi,zj,zk , val,detQ,detP ;
    mat33 P , Q , M ;
-   int i,j,k=0,p,q,r , ibest,jbest,kbest,pbest,qbest,rbest ;
+   /* i, j and k are each set only inside a switch whose default arm is
+      assert(0); that arm disappears under NDEBUG, so give them the same
+      defined starting value k already had. */
+   int i=0,j=0,k=0,p,q,r , ibest,jbest,kbest,pbest,qbest,rbest ;
    float vbest ;
 
    if( icod == NULL || jcod == NULL || kcod == NULL ) return ; /* bad */
