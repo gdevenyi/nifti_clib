@@ -4265,7 +4265,8 @@ nifti_image * nt_read_bricks(nt_opts * opts, const char * fname, int len, int * 
 
     /* now populate NBL (can be based only on len and nim) */
     NBL->nbricks = len;
-    NBL->bsize = (size_t)nim->nbyper * nim->nx * nim->ny * nim->nz;
+    NBL->bsize = (size_t)nim->nbyper * (size_t)nim->nx
+                * (size_t)nim->ny * (size_t)nim->nz;
     NBL->bricks = (void **)calloc((size_t)(NBL->nbricks),(size_t)(sizeof(void *)));
     if( !NBL->bricks ){
         fprintf(stderr,"** NRB: failed to alloc %d pointers\n",NBL->nbricks);
