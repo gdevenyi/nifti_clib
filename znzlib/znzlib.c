@@ -147,7 +147,7 @@ size_t znzread(void* buf, size_t size, size_t nmemb, znzFile file)
        nread = gzread(file->zfptr, (void *)cbuf, n2read);
        if( nread < 0 ) return nread; /* returns -1 on error */
 
-       remain -= nread;
+       remain -= (size_t)nread;
        cbuf += nread;
 
        /* require reading n2read bytes, so we don't get stuck */
@@ -181,7 +181,7 @@ size_t znzwrite(const void* buf, size_t size, size_t nmemb, znzFile file)
        /* gzread returns 0 on error, but in case that ever changes... */
        if( nwritten < 0 ) return nwritten;
 
-       remain -= nwritten;
+       remain -= (size_t)nwritten;
        cbuf += nwritten;
 
        /* require writing n2write bytes, so we don't get stuck */
