@@ -331,6 +331,8 @@ void FslGetHdrImgNames(const char* filename, const FSLIO* fslio,
   basename = FslMakeBaseName(filename);
   *hdrname = (char *)calloc(strlen(basename)+8, sizeof(char));
   *imgname = (char *)calloc(strlen(basename)+8, sizeof(char));
+  if (*hdrname==NULL || *imgname==NULL)
+    FSLIOERR("FslGetHdrImgNames: failed to allocate the name buffers");
   strcpy(*hdrname,basename);
   strcpy(*imgname,basename);
   filetype = FslGetFileType(fslio);
@@ -394,6 +396,7 @@ FSLIO *FslInit(void)
 {
   FSLIO *fslio;
   fslio = (FSLIO *) calloc(1,sizeof(FSLIO));
+  if (fslio==NULL)  FSLIOERR("FslInit: failed to allocate FSLIO");
   FslSetInit(fslio);
   return fslio;
 }
@@ -942,6 +945,7 @@ size_t FslWriteVolumes(FSLIO *fslio, const void *buffer, size_t nvols)
       short nx, ny, nz, nv;
       inbuf = (const char *) buffer;
       tmpbuf = (char *)calloc(nbytes,1);
+      if (tmpbuf==NULL)  FSLIOERR("FslWriteVolumes: failed to allocate the swap buffer");
       FslGetDim(fslio,&nx,&ny,&nz,&nv);
       nrows = (long int)(nbytes / ((size_t)nx * (size_t)bpv));
       for (n=0; n<nrows; n++) {
@@ -1977,6 +1981,7 @@ int FslClose(FSLIO *fslio)
 
     /* read in the old header, change the origin and write it out again */
     hdr = (struct dsr *) calloc(1,sizeof(struct dsr));
+    if (hdr==NULL)  FSLIOERR("FslClose: failed to allocate dsr");
     FslReadRawHeader(hdr,fslio->niftiptr->fname);
     if (fslio->niftiptr->byteorder != nifti_short_order()) {AvwSwapHeader(hdr);}
 
