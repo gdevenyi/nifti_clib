@@ -1138,7 +1138,7 @@ strip_whitespace(const char * str, int slen)
     *buf = '\0';
   else
   {
-    strncpy(buf, str + ifirst, len - ifirst - ilast);
+    strncpy(buf, str + ifirst, (size_t)(len - ifirst - ilast));
     buf[len - ifirst - ilast] = '\0';
   }
 
@@ -1210,7 +1210,7 @@ append_to_string(char ** ostr, int * olen, const char * istr, int ilen)
   }
 
   /* copy, starting at old nul char (if any), and terminate */
-  strncpy((*ostr) + *olen - 1, istr, ilen);
+  strncpy((*ostr) + *olen - 1, istr, (size_t)ilen);
   (*ostr)[newlen - 1] = '\0';
   *olen = newlen;
 

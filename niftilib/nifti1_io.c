@@ -1085,7 +1085,7 @@ nifti_copynsort(int nbricks, const int * blist, int ** slist, int ** sindex)
   }
 
   /* init the lists */
-  memcpy(*slist, blist, nbricks * sizeof(int));
+  memcpy(*slist, blist, (size_t)nbricks * sizeof(int));
   for (c1 = 0; c1 < nbricks; c1++)
     (*sindex)[c1] = c1;
 
@@ -5601,7 +5601,7 @@ nifti_add_exten_to_list(nifti1_extension * new_ext, nifti1_extension ** list, in
   /* if an old list exists, copy the pointers and free the list */
   if (tmplist)
   {
-    memcpy(*list, tmplist, (new_length - 1) * sizeof(nifti1_extension));
+    memcpy(*list, tmplist, (size_t)(new_length - 1) * sizeof(nifti1_extension));
     free(tmplist);
   }
 
@@ -6799,7 +6799,7 @@ nifti_copy_extensions(nifti_image * nim_dest, const nifti_image * nim_src)
     nim_dest->ext_list[c].esize = size;
     nim_dest->ext_list[c].ecode = nim_src->ext_list[c].ecode;
     nim_dest->ext_list[c].edata = data;
-    memcpy(data, nim_src->ext_list[c].edata, old_size - 8);
+    memcpy(data, nim_src->ext_list[c].edata, (size_t)(old_size - 8));
 
     nim_dest->num_ext++;
   }
@@ -8107,7 +8107,7 @@ nifti_image_from_ascii(const char * str, int * bytes_read)
       nn = ii - spos - 1;
       if (nn > 1023)
         nn = 1023;
-      memcpy(rhs, str + spos + 1, nn);
+      memcpy(rhs, str + spos + 1, (size_t)nn);
       rhs[nn] = '\0';
       spos = (str[ii] == '\'') ? ii + 1 : ii;
     }

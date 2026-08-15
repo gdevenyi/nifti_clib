@@ -1117,7 +1117,7 @@ nifti_load_NBL_bricks(nifti_image *      nim,
     {
       /* we have already read this sub-brick, just copy the previous one */
       /* note that this works because they are sorted */
-      memcpy(NBL->bricks[idest], NBL->bricks[sindex[c - 1]], NBL->bsize);
+      memcpy(NBL->bricks[idest], NBL->bricks[sindex[c - 1]], (size_t)(NBL->bsize));
     }
 
     prev = isrc; /* in any case, note the now previous sub-brick */
@@ -7175,10 +7175,10 @@ nifti_read_header(const char * hname, int * nver, int check)
   {
     if (g_opts.debug > 2)
       fprintf(stderr, "-- %s: copying and filling NIFTI-2 header...\n", fname);
-    memcpy(&n2hdr, &n1hdr, h1size); /* copy first part */
+    memcpy(&n2hdr, &n1hdr, (size_t)h1size); /* copy first part */
     remain = h2size - h1size;
     posn = (char *)&n2hdr + h1size;
-    ii = (int)znzread(posn, 1, remain, fp); /* read remaining part */
+    ii = (int)znzread(posn, 1, (size_t)remain, fp); /* read remaining part */
     if (ii < (int)remain)
     {
       LNI_FERR(fname, "short NIFTI-2 header read for file", hfile);
@@ -7359,10 +7359,10 @@ nifti_image_read(const char * hname, int read_data)
     /* fill nifti-2 header and convert */
     if (g_opts.debug > 2)
       fprintf(stderr, "-- %s: copying and filling NIFTI-2 header...\n", fname);
-    memcpy(&n2hdr, &n1hdr, h1size); /* copy first part */
+    memcpy(&n2hdr, &n1hdr, (size_t)h1size); /* copy first part */
     remain = h2size - h1size;
     posn = (char *)&n2hdr + h1size;
-    ii = (int)znzread(posn, 1, remain, fp); /* read remaining part */
+    ii = (int)znzread(posn, 1, (size_t)remain, fp); /* read remaining part */
     if (ii < (int)remain)
     {
       LNI_FERR(fname, "short NIFTI-2 header read for file", hfile);
@@ -7813,7 +7813,7 @@ nifti_add_exten_to_list(nifti1_extension * new_ext, nifti1_extension ** list, in
   /* if an old list exists, copy the pointers and free the list */
   if (tmplist)
   {
-    memcpy(*list, tmplist, (new_length - 1) * sizeof(nifti1_extension));
+    memcpy(*list, tmplist, (size_t)(new_length - 1) * sizeof(nifti1_extension));
     free(tmplist);
   }
 
@@ -9360,7 +9360,7 @@ nifti_copy_extensions(nifti_image * nim_dest, const nifti_image * nim_src)
     nim_dest->ext_list[c].esize = size;
     nim_dest->ext_list[c].ecode = nim_src->ext_list[c].ecode;
     nim_dest->ext_list[c].edata = data;
-    memcpy(data, nim_src->ext_list[c].edata, old_size - 8);
+    memcpy(data, nim_src->ext_list[c].edata, (size_t)(old_size - 8));
 
     nim_dest->num_ext++;
   }
@@ -10732,7 +10732,7 @@ nifti_image_from_ascii(const char * str, int * bytes_read)
       nn = ii - spos - 1;
       if (nn > 1023)
         nn = 1023;
-      memcpy(rhs, str + spos + 1, nn);
+      memcpy(rhs, str + spos + 1, (size_t)nn);
       rhs[nn] = '\0';
       spos = (str[ii] == '\'') ? ii + 1 : ii;
     }

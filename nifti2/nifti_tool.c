@@ -3984,7 +3984,7 @@ modify_field(void * basep, field_s * field, const char * data)
         /* otherwise, we're good */
         {
           const int16_t sval = (int16_t)val;
-          memcpy((char *)basep + field->offset + fc * sizeof(sval), &sval, sizeof(sval));
+          memcpy((char *)basep + field->offset + (size_t)fc * sizeof(sval), &sval, (size_t)sizeof(sval));
         }
         if (g_debug > 1)
           fprintf(stderr, "+d setting posn %d of '%s' to %d\n", fc, field->name, val);
@@ -4004,7 +4004,7 @@ modify_field(void * basep, field_s * field, const char * data)
         }
         {
           const int32_t ival = (int32_t)val;
-          memcpy((char *)basep + field->offset + fc * sizeof(ival), &ival, sizeof(ival));
+          memcpy((char *)basep + field->offset + (size_t)fc * sizeof(ival), &ival, (size_t)sizeof(ival));
         }
         if (g_debug > 1)
           fprintf(stderr, "+d setting posn %d of '%s' to %d\n", fc, field->name, val);
@@ -4023,7 +4023,7 @@ modify_field(void * basep, field_s * field, const char * data)
           fprintf(stderr, "** found %d of %d modify values\n", fc, field->len);
           return 1;
         }
-        memcpy((char *)basep + field->offset + fc * sizeof(v64), &v64, sizeof(v64));
+        memcpy((char *)basep + field->offset + (size_t)fc * sizeof(v64), &v64, (size_t)sizeof(v64));
         if (g_debug > 1)
           fprintf(stderr, "+d setting posn %d of '%s' to %" PRId64 "\n", fc, field->name, v64);
         posn += nchars;
@@ -4041,7 +4041,7 @@ modify_field(void * basep, field_s * field, const char * data)
           return 1;
         }
         /* otherwise, we're good */
-        memcpy((char *)basep + field->offset + fc * sizeof(fval), &fval, sizeof(fval));
+        memcpy((char *)basep + field->offset + (size_t)fc * sizeof(fval), &fval, (size_t)sizeof(fval));
         if (g_debug > 1)
           fprintf(stderr, "+d setting posn %d of '%s' to %f\n", fc, field->name, fval);
         posn += nchars;
@@ -4060,7 +4060,7 @@ modify_field(void * basep, field_s * field, const char * data)
           return 1;
         }
         /* otherwise, we're good */
-        memcpy((char *)basep + field->offset + fc * sizeof(f64), &f64, sizeof(f64));
+        memcpy((char *)basep + field->offset + (size_t)fc * sizeof(f64), &f64, (size_t)sizeof(f64));
         if (g_debug > 1)
           fprintf(stderr, "+d setting posn %d of '%s' to %f\n", fc, field->name, f64);
         posn += nchars;
@@ -4072,9 +4072,9 @@ modify_field(void * basep, field_s * field, const char * data)
     {
       char * dest = (char *)basep + field->offset;
       nchars = (int)dataLength;
-      strncpy(dest, data, field->len);
+      strncpy(dest, data, (size_t)(field->len));
       if (nchars < field->len) /* clear the rest */
-        memset(dest + nchars, '\0', field->len - nchars);
+        memset(dest + nchars, '\0', (size_t)(field->len - nchars));
     }
     break;
   }
