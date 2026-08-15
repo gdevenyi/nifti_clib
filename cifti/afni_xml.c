@@ -282,7 +282,7 @@ axml_read_file(const char * fname, int read_data)
     if (reset_xml_buf(xd, &buf, &bsize))
       break;
 
-    blen = fread(buf, 1, bsize, fp);
+    blen = (unsigned)fread(buf, 1, bsize, fp);
 
     /* check for early termination */
     bshort = loc_strnlen(buf, blen);
@@ -378,7 +378,7 @@ axml_read_buf(const char * buf_in, int64_t bin_len)
     if (bin_remain >= bsize)
       blen = bsize;
     else
-      blen = bin_remain;
+      blen = (unsigned)bin_remain;
 
     if (blen > 0 && blen <= (unsigned)bsize)
     {
@@ -1099,7 +1099,7 @@ strip_whitespace(const char * str, int slen)
   if (!str || slen > 1024)
     return str;
 
-  len = strlen(str);
+  len = (int)strlen(str);
   if (slen > 0 && slen < len)
     len = slen;
   if (len <= 0)
@@ -1213,7 +1213,7 @@ disp_gen_text(afni_xml_control * xd, const char * header, const char * cdata, in
   if (len == wlen)
   {
     str = "whitespace"; /* just note the whitespace */
-    len = strlen(str);
+    len = (int)strlen(str);
   }
 
   show_depth(xd, 1);

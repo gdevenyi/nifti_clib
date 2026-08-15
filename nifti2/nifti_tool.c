@@ -4064,7 +4064,7 @@ modify_field(void * basep, field_s * field, const char * data)
     case NT_DT_STRING:
     {
       char * dest = (char *)basep + field->offset;
-      nchars = dataLength;
+      nchars = (int)dataLength;
       strncpy(dest, data, field->len);
       if (nchars < field->len) /* clear the rest */
         memset(dest + nchars, '\0', field->len - nchars);
@@ -6902,7 +6902,7 @@ act_disp_ci(nt_opts * opts)
     }
 
     /* should we change disp_raw_data to allow for 64-bit nvalues? */
-    disp_raw_data(data, nim->datatype, len64 / nim->nbyper, space, 1);
+    disp_raw_data(data, nim->datatype, (int)(len64 / nim->nbyper), space, 1);
 
     nifti_image_free(nim);
   }
@@ -7796,7 +7796,7 @@ nt_read_header(const char * fname, int * nver, int * swapped, int check, int new
  * the returned object is a (max 4-D) nifti_image
  *----------------------------------------------------------------------*/
 nifti_image *
-nt_read_bricks(nt_opts * opts, char * fname, int len, int64_t * list, nifti_brick_list * NBL)
+nt_read_bricks(nt_opts * opts, char * fname, int64_t len, int64_t * list, nifti_brick_list * NBL)
 {
   nifti_image * nim;
   int           c;
@@ -7845,8 +7845,8 @@ nt_read_bricks(nt_opts * opts, char * fname, int len, int64_t * list, nifti_bric
       printf("   new_datatype = %d\n", opts->new_datatype);
       if (list && len > 0)
       {
-        printf("   brick_list[%d] = ", len);
-        disp_raw_data(list, DT_INT64, len, ' ', 1);
+        printf("   brick_list[%" PRId64 "] = ", len);
+        disp_raw_data(list, DT_INT64, (int)len, ' ', 1);
       }
       fflush(stdout); /* disp_raw_data uses stdout */
     }

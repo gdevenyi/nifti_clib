@@ -295,7 +295,7 @@ FslFileType(const char * fname)
   int retval = -1;
   if (fname == NULL)
     return retval;
-  flen = strlen(fname);
+  flen = (int)strlen(fname);
   /* debian@onerussian.com had to group conditions to avoid possible
    * illegal memory read-ins */
   if (flen < 5)
@@ -421,7 +421,7 @@ FslMakeBaseName(const char * fname)
   char * basename;
   int    blen;
   basename = nifti_makebasename(fname);
-  blen = strlen(basename);
+  blen = (int)strlen(basename);
 #ifdef HAVE_ZLIB
   if ((blen > 7) && (strcmp(basename + blen - 7, ".mnc.gz") == 0))
   {
@@ -1079,7 +1079,7 @@ FslReadAllVolumes(FSLIO * fslio, char * filename)
 size_t
 FslReadVolumes(FSLIO * fslio, void * buffer, size_t nvols)
 {
-  int    volbytes;
+  size_t volbytes;
   size_t retval = 0;
   if (fslio == NULL)
     FSLIOERR("FslReadVolumes: Null pointer passed for FSLIO");
@@ -1450,15 +1450,19 @@ FslReadTimeSeries(FSLIO * fslio, void * buffer, short xVox, short yVox, short zV
 int
 FslSeekVolume(FSLIO * fslio, size_t vols)
 {
-  int offset;
+  znz_off_t offset;
   if (fslio == NULL)
     FSLIOERR("FslSeekVolume: Null pointer passed for FSLIO");
   if (fslio->niftiptr != NULL)
   {
-    offset = fslio->niftiptr->iname_offset + vols * FslGetVolSize(fslio) * fslio->niftiptr->nbyper;
+    offset = (znz_off_t)fslio->niftiptr->iname_offset +
+             (znz_off_t)vols * (znz_off_t)FslGetVolSize(fslio) * (znz_off_t)fslio->niftiptr->nbyper;
     if (znz_isnull(fslio->fileptr))
       FSLIOERR("FslSeekVolume: Null file pointer");
-    return znzseek(fslio->fileptr, offset, SEEK_SET);
+    /* FslSeekVolume() is declared to return int, so a resulting offset
+       beyond 2GB cannot be represented.  Behaviour is unchanged from
+       before; widening it would change the published prototype. */
+    return (int)znzseek(fslio->fileptr, offset, SEEK_SET);
   }
   if (fslio->mincptr != NULL)
   {
@@ -1581,8 +1585,8 @@ FslSetDimensionality(FSLIO * fslio, size_t dim)
     FSLIOERR("FslSetDimensionality: Null pointer passed for FSLIO");
   if (fslio->niftiptr != NULL)
   {
-    fslio->niftiptr->ndim = dim;
-    fslio->niftiptr->dim[0] = dim;
+    fslio->niftiptr->ndim = (int)dim;
+    fslio->niftiptr->dim[0] = (short)dim;
   }
   if (fslio->mincptr != NULL)
   {
@@ -2515,7 +2519,7 @@ FslReadRawHeader(void * buffer, const char * filename)
     fprintf(stderr, "Could not open header %s\n", filename);
     return 0;
   }
-  retval = znzread(buffer, 1, 348, fp);
+  retval = (int)znzread(buffer, 1, 348, fp);
   znzclose(fp);
   if (retval != 348)
   {
@@ -2633,9 +2637,9 @@ FslGetVolumeAsScaledDouble(FSLIO * fslio, int vol)
     if ((fslio->niftiptr->dim[0] < 3) || (fslio->niftiptr->dim[0] > 4))
       FSLIOERR("FslGetVolumeAsScaledDouble: Incorrect dataset dimension, 3D-4D needed");
 
-    xx = (fslio->niftiptr->nx == 0 ? 1 : (long)fslio->niftiptr->nx);
-    yy = (fslio->niftiptr->ny == 0 ? 1 : (long)fslio->niftiptr->ny);
-    zz = (fslio->niftiptr->nz == 0 ? 1 : (long)fslio->niftiptr->nz);
+    xx = (fslio->niftiptr->nx == 0 ? 1 : fslio->niftiptr->nx);
+    yy = (fslio->niftiptr->ny == 0 ? 1 : fslio->niftiptr->ny);
+    zz = (fslio->niftiptr->nz == 0 ? 1 : fslio->niftiptr->nz);
 
     if (fslio->niftiptr->scl_slope == 0)
     {
@@ -2723,10 +2727,10 @@ FslGetBufferAsScaledDouble(FSLIO * fslio)
     if ((fslio->niftiptr->dim[0] <= 0) || (fslio->niftiptr->dim[0] > 4))
       FSLIOERR("FslGetBufferAsScaledDouble: Incorrect dataset dimension, 1-4D needed");
 
-    xx = (fslio->niftiptr->nx == 0 ? 1 : (long)fslio->niftiptr->nx);
-    yy = (fslio->niftiptr->ny == 0 ? 1 : (long)fslio->niftiptr->ny);
-    zz = (fslio->niftiptr->nz == 0 ? 1 : (long)fslio->niftiptr->nz);
-    tt = (fslio->niftiptr->nt == 0 ? 1 : (long)fslio->niftiptr->nt);
+    xx = (fslio->niftiptr->nx == 0 ? 1 : fslio->niftiptr->nx);
+    yy = (fslio->niftiptr->ny == 0 ? 1 : fslio->niftiptr->ny);
+    zz = (fslio->niftiptr->nz == 0 ? 1 : fslio->niftiptr->nz);
+    tt = (fslio->niftiptr->nt == 0 ? 1 : fslio->niftiptr->nt);
 
     if (fslio->niftiptr->scl_slope == 0)
     {

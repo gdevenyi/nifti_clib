@@ -8752,7 +8752,9 @@ nifti_read_subregion_image(nifti_image * nim, const int * start_index, const int
     }
   }
   znzclose(fp);
-  return bytes;
+  /* nifti_read_subregion_image() is declared to return int; a subregion
+     larger than 2GB cannot be requested through its int region_size. */
+  return (int)bytes;
 }
 
 

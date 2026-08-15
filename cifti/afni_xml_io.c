@@ -166,7 +166,7 @@ axio_num_tokens(const char * str, int64_t maxlen)
     }
   }
 
-  return ntok;
+  return (int)ntok;
 }
 
 
@@ -202,7 +202,7 @@ axio_show_attrs(FILE * fp, afni_xml_t * ax, int indent)
 
   for (ind = 0, maxl = 1; ind < ax->attrs.length; ind++)
   {
-    slen = strlen(ax->attrs.name[ind]);
+    slen = (int)strlen(ax->attrs.name[ind]);
     if (slen > maxl)
       maxl = slen;
   }

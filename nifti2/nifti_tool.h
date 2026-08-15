@@ -449,7 +449,7 @@ write_hdr2_to_file(nifti_2_header * nhdr, const char * fname);
 NI2_API nifti_image *
 nt_image_read(nt_opts * opts, const char * fname, int read_data, int make_ver);
 NI2_API nifti_image *
-nt_read_bricks(nt_opts * opts, char * fname, int len, int64_t * list, nifti_brick_list * NBL);
+nt_read_bricks(nt_opts * opts, char * fname, int64_t len, int64_t * list, nifti_brick_list * NBL);
 NI2_API void *
 nt_read_header(const char * fname, int * nver, int * swapped, int check, int new_datatype, int64_t new_dim[8]);
 
