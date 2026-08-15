@@ -207,19 +207,24 @@ int disp_cifti_extension(nifti_image * nim, opts_t * opts)
               opts->fout ? opts->fout : "DEFAULT" );
 
    if( !nim ) return 1;
-   ext = nim->ext_list;
+   /* find the CIFTI extension, if there is one.  This loop used to test
+      ext_list[0] on every iteration without ever advancing, so it could
+      only ever match an extension that happened to be first. */
+   ext = NULL;
    for( ind = 0; ind < nim->num_ext; ind++ )
-      if( ext->ecode == NIFTI_ECODE_CIFTI ) break;
+      if( nim->ext_list[ind].ecode == NIFTI_ECODE_CIFTI ) {
+         ext = nim->ext_list + ind;
+         break;
+      }
 
    fp = open_write_stream(opts->fout);
-   if( ext && ext->ecode != NIFTI_ECODE_CIFTI ) {
+   if( !ext ) {
       fprintf(fp, "** no CIFTI extension in %s\n",nim->fname?nim->fname:"NULL");
+      close_stream(fp);
       return 1;
    }
 
-   if(ext) {
-     fprintf(fp, "%.*s\n", ext->esize-8, ext->edata);
-   }
+   fprintf(fp, "%.*s\n", ext->esize-8, ext->edata);
 
    /* possibly close file */
    close_stream(fp);
