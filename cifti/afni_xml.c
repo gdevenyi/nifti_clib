@@ -283,6 +283,11 @@ axml_read_file(const char * fname, int read_data)
       break;
 
     blen = (unsigned)fread(buf, 1, (size_t)bsize, fp);
+    if (ferror(fp))
+    {
+      fprintf(stderr, "** failed to read XML file '%s'\n", fname);
+      break;
+    }
 
     /* check for early termination */
     bshort = loc_strnlen(buf, blen);
@@ -293,7 +298,10 @@ axml_read_file(const char * fname, int read_data)
       blen = (unsigned)bshort;
     }
 
-    done = blen < (unsigned)bsize;
+    /* a short read means end of input; so does hitting EOF exactly on a
+       buffer boundary, and stopping here avoids a final read that can
+       only return zero */
+    done = (blen < (unsigned)bsize) || feof(fp);
 
     if (xd->verb > 4)
       fprintf(stderr, "-- XML_Parse # %d\n", pcount);
