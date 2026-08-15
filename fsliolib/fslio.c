@@ -909,7 +909,7 @@ size_t FslWriteVolumes(FSLIO *fslio, const void *buffer, size_t nvols)
     size_t bytes_written;
     size_t nbytes;
     long int bpv = fslio->niftiptr->nbyper;  /* bytes per voxel */
-    nbytes = nvols * FslGetVolSize(fslio) * bpv;
+    nbytes = nvols * FslGetVolSize(fslio) * (size_t)bpv;
 
     if ( (FslBaseFileType(FslGetFileType(fslio))==FSL_TYPE_ANALYZE)
          && (FslGetLeftRightOrder(fslio)==FSL_NEUROLOGICAL) ) {
@@ -1009,7 +1009,7 @@ size_t FslReadSliceSeries(FSLIO *fslio, void *buffer, short slice, size_t nvols)
     if ((slice<0) || (slice>=z)) FSLIOERR("FslReadSliceSeries: slice outside valid range");
 
     slbytes = x * y * (FslGetDataType(fslio, &type) / 8);
-    volbytes = slbytes * z;
+    volbytes = slbytes * (size_t)z;
 
     orig_offset = znztell(fslio->fileptr);
     znzseek(fslio->fileptr, slbytes*slice, SEEK_CUR);
@@ -1066,9 +1066,9 @@ size_t FslReadRowSeries(FSLIO *fslio, void *buffer, short row, short slice, size
     if ((slice<0) || (slice>=z)) FSLIOERR("FslReadRowSeries: slice outside valid range");
     if ((row<0) || (row>=y)) FSLIOERR("FslReadRowSeries: row outside valid range");
 
-    rowbytes = x * (FslGetDataType(fslio, &type)) / 8;
-    slbytes = rowbytes * y;
-    volbytes = slbytes * z;
+    rowbytes = (size_t)x * (size_t)(FslGetDataType(fslio, &type)) / 8;
+    slbytes = rowbytes * (size_t)y;
+    volbytes = slbytes * (size_t)z;
 
     orig_offset = znztell(fslio->fileptr);
     znzseek(fslio->fileptr, rowbytes*row + slbytes*slice, SEEK_CUR);
@@ -1128,11 +1128,11 @@ size_t FslReadTimeSeries(FSLIO *fslio, void *buffer, short xVox, short yVox, sho
     if ((yVox<0) || (yVox >=ydim)) FSLIOERR("FslReadTimeSeries: voxel outside valid range");
     if ((zVox<0) || (zVox >=zdim)) FSLIOERR("FslReadTimeSeries: voxel outside valid range");
 
-    wordsize = fslio->niftiptr->nbyper;
+    wordsize = (size_t)fslio->niftiptr->nbyper;
     volbytes = xdim * ydim * zdim * wordsize;
 
     orig_offset = znztell(fslio->fileptr);
-    offset = ((ydim * zVox + yVox) * xdim + xVox) * wordsize;
+    offset = (((size_t)ydim * (size_t)zVox + (size_t)yVox) * (size_t)xdim + (size_t)xVox) * wordsize;
     znzseek(fslio->fileptr,offset,SEEK_CUR);
 
     for (n=0; n<nvols; n++) {
@@ -1179,7 +1179,8 @@ size_t FslGetVolSize(FSLIO *fslio)
   /* returns number of voxels per 3D volume */
   if (fslio==NULL)  FSLIOERR("FslGetVolSize: Null pointer passed for FSLIO");
   if (fslio->niftiptr!=NULL) {
-    return (fslio->niftiptr->nx * fslio->niftiptr->ny * fslio->niftiptr->nz);
+    return (size_t)fslio->niftiptr->nx * (size_t)fslio->niftiptr->ny *
+           (size_t)fslio->niftiptr->nz;
   }
   if (fslio->mincptr!=NULL) {
     fprintf(stderr,"Warning:: Minc is not yet supported\n");
