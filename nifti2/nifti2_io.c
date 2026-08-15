@@ -10088,7 +10088,6 @@ unescape_string(char * str)
       else
       {
         str[jj] = LF;
-        ;
         nn++;
       } /* CR only */
     }
