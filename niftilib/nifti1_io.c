@@ -1019,8 +1019,8 @@ nifti_alloc_NBL_mem(const nifti_image * nim, int nbricks, nifti_brick_list * nbl
       nbl->nbricks *= nim->dim[c];
   }
 
-  nbl->bsize = (size_t)nim->nx * nim->ny * nim->nz * nim->nbyper; /* bytes */
-  nbl->bricks = (void **)malloc(nbl->nbricks * sizeof(void *));
+  nbl->bsize = (size_t)nim->nx * (size_t)nim->ny * (size_t)nim->nz * (size_t)nim->nbyper; /* bytes */
+  nbl->bricks = (void **)malloc((size_t)nbl->nbricks * sizeof(void *));
 
   if (!nbl->bricks)
   {
@@ -1073,8 +1073,8 @@ nifti_copynsort(int nbricks, const int * blist, int ** slist, int ** sindex)
   int *stmp, *itmp; /* for ease of typing/reading */
   int  c1, c2, spos, tmp;
 
-  *slist = (int *)malloc(nbricks * sizeof(int));
-  *sindex = (int *)malloc(nbricks * sizeof(int));
+  *slist = (int *)malloc((size_t)nbricks * sizeof(int));
+  *sindex = (int *)malloc((size_t)nbricks * sizeof(int));
 
   if (!*slist || !*sindex)
   {
@@ -5367,13 +5367,13 @@ nifti_read_ascii_image(znzFile fp, char * fname, int flen, int read_data)
 
   if (slen > 65530)
     slen = 65530;
-  sbuf = (char *)calloc(slen + 1, sizeof(char));
+  sbuf = (char *)calloc((size_t)(slen + 1), (size_t)sizeof(char));
   if (!sbuf)
   {
     fprintf(stderr, "** %s: failed to alloc %d bytes for sbuf", lfunc, 65530);
     return NULL;
   }
-  znzread(sbuf, 1, slen, fp);
+  znzread(sbuf, 1, (size_t)slen, fp);
   nim = nifti_image_from_ascii(sbuf, &txt_size);
   free(sbuf);
   if (nim == NULL)
@@ -5582,7 +5582,7 @@ nifti_add_exten_to_list(nifti1_extension * new_ext, nifti1_extension ** list, in
   nifti1_extension * tmplist;
 
   tmplist = *list;
-  *list = (nifti1_extension *)malloc(new_length * sizeof(nifti1_extension));
+  *list = (nifti1_extension *)malloc((size_t)new_length * sizeof(nifti1_extension));
 
   /* check for failure first */
   if (!*list)
@@ -5647,15 +5647,15 @@ nifti_fill_extension(nifti1_extension * ext, const char * data, int len, int eco
   ext->esize = esize;
 
   /* allocate esize-8 (maybe more than len), using calloc for fill */
-  ext->edata = (char *)calloc(esize - 8, sizeof(char));
+  ext->edata = (char *)calloc((size_t)(esize - 8), (size_t)sizeof(char));
   if (!ext->edata)
   {
     fprintf(stderr, "** NFE: failed to alloc %d bytes for extension\n", len);
     return -1;
   }
 
-  memcpy(ext->edata, data, len); /* copy the data, using len */
-  ext->ecode = ecode;            /* set the ecode */
+  memcpy(ext->edata, data, (size_t)len); /* copy the data, using len */
+  ext->ecode = ecode;                    /* set the ecode */
 
   if (g_opts.debug > 2)
     fprintf(stderr, "+d alloc %d bytes for ext len %d, ecode %d, esize %d\n", esize - 8, len, ecode, esize);
@@ -5730,14 +5730,14 @@ nifti_read_next_extension(nifti1_extension * nex, nifti_image * nim, int remain,
   nex->ecode = code;
 
   size -= 8; /* subtract space for size and code in extension */
-  nex->edata = (char *)malloc(size * sizeof(char));
+  nex->edata = (char *)malloc((size_t)size * sizeof(char));
   if (!nex->edata)
   {
     fprintf(stderr, "** failed to allocate %d bytes for extension\n", size);
     return -1;
   }
 
-  count = (int)znzread(nex->edata, 1, size, fp);
+  count = (int)znzread(nex->edata, 1, (size_t)size, fp);
   if (count < size)
   {
     if (g_opts.debug > 0)
@@ -6578,12 +6578,12 @@ nifti_make_new_nim(const int dims[8], int datatype, int data_fill)
 
   if (data_fill)
   {
-    nim->data = calloc(nim->nvox, nim->nbyper);
+    nim->data = calloc((size_t)(nim->nvox), (size_t)(nim->nbyper));
 
     /* if we cannot allocate data, take ball and go home */
     if (!nim->data)
     {
-      fprintf(stderr, "** NMNN: failed to alloc %u bytes for data\n", (unsigned)(nim->nvox * nim->nbyper));
+      fprintf(stderr, "** NMNN: failed to alloc %u bytes for data\n", (unsigned)(nim->nvox * (size_t)nim->nbyper));
       nifti_image_free(nim);
       nim = NULL;
     }
@@ -6783,7 +6783,7 @@ nifti_copy_extensions(nifti_image * nim_dest, const nifti_image * nim_src)
     if (g_opts.debug > 2)
       fprintf(stderr, "+d dup'ing ext #%d of size %d (from size %d)\n", c, size, old_size);
     /* data length is size-8, as esize includes space for esize and ecode */
-    data = (char *)calloc(size - 8, sizeof(char)); /* maybe size > old */
+    data = (char *)calloc((size_t)(size - 8), (size_t)sizeof(char)); /* maybe size > old */
     if (!data)
     {
       fprintf(stderr, "** failed to alloc %d bytes for extension\n", size);
@@ -7601,7 +7601,7 @@ escapize_string(const char * str)
         break; /* copy all other chars */
     }
   }
-  out = (char *)calloc(1, lout); /* allocate output string */
+  out = (char *)calloc((size_t)1, (size_t)lout); /* allocate output string */
   if (!out)
   {
     fprintf(stderr, "** escapize_string: failed to alloc %d bytes\n", lout);
@@ -7972,7 +7972,7 @@ nifti_image_to_ascii(const nifti_image * nim)
   snprintf(buf + strlen(buf), bufLen - strlen(buf), "/>\n"); /* XML-ish closer */
 
   nbuf = (int)strlen(buf);
-  newbuf = (char *)realloc((void *)buf, nbuf + 1); /* cut back to proper length */
+  newbuf = (char *)realloc((void *)buf, (size_t)(nbuf + 1)); /* cut back to proper length */
   if (!newbuf)
   {
     free(buf);
@@ -8918,7 +8918,7 @@ rci_alloc_mem(void ** data, const int prods[8], int nprods, int nbyper)
     if (g_opts.debug > 1)
       fprintf(stderr, "+d alloc %d (= %d x %d) bytes for collapsed image\n", size, size / nbyper, nbyper);
 
-    *data = malloc(size); /* actually allocate the memory */
+    *data = malloc((size_t)size); /* actually allocate the memory */
     if (!*data)
     {
       fprintf(stderr, "** rci_am: failed to alloc %d bytes for data\n", size);
@@ -9105,7 +9105,7 @@ nifti_get_intlist(int nvals, const char * str)
     if (str[ipos] == ',' || ISEND(str[ipos]))
     {
       nout++;
-      subv_realloc = (int *)realloc((char *)subv, sizeof(int) * (nout + 1));
+      subv_realloc = (int *)realloc((char *)subv, sizeof(int) * (size_t)(nout + 1));
       if (!subv_realloc)
       {
         free(subv);
@@ -9222,7 +9222,7 @@ nifti_get_intlist(int nvals, const char * str)
     for (ii = ibot; (ii - itop) * istep <= 0; ii += istep)
     {
       nout++;
-      subv_realloc = (int *)realloc((char *)subv, sizeof(int) * (nout + 1));
+      subv_realloc = (int *)realloc((char *)subv, sizeof(int) * (size_t)(nout + 1));
       if (!subv_realloc)
       {
         free(subv);

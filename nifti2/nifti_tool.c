@@ -1009,7 +1009,7 @@ add_int(int_list * ilist, int val)
   if (ilist->len == 0)
     ilist->list = NULL; /* just to be safe */
   ilist->len++;
-  ilist->list = (int *)realloc(ilist->list, ilist->len * sizeof(int));
+  ilist->list = (int *)realloc(ilist->list, (size_t)ilist->len * sizeof(int));
   if (!ilist->list)
   {
     fprintf(stderr, "** failed to alloc %d (int *) elements\n", ilist->len);
@@ -1033,7 +1033,7 @@ add_string(str_list * slist, const char * str)
   if (slist->len == 0)
     slist->list = NULL; /* just to be safe */
   slist->len++;
-  slist->list = (const char **)realloc(slist->list, slist->len * sizeof(char *));
+  slist->list = (const char **)realloc(slist->list, (size_t)slist->len * sizeof(char *));
   if (!slist->list)
   {
     fprintf(stderr, "** failed to alloc %d (char *) elements\n", slist->len);
@@ -2360,7 +2360,7 @@ read_file_text(const char * filename, int * length)
 
   /* allocate the bytes, and fill them with the file contents */
 
-  text = (char *)malloc(len64 * sizeof(char));
+  text = (char *)malloc((size_t)len64 * sizeof(char));
   if (!text)
   {
     fprintf(stderr, "** RFT: failed to allocate %" PRId64 " bytes\n", len64);
@@ -2572,7 +2572,7 @@ remove_ext_list(nifti_image * nim, const char ** elist, int len)
   if (g_debug > 2)
     fprintf(stderr, "+d removing %d exts from '%s'\n", len, nim->fname);
 
-  if (!(marks = (int *)calloc(nim->num_ext, sizeof(int))))
+  if (!(marks = (int *)calloc((size_t)(nim->num_ext), (size_t)sizeof(int))))
   {
     fprintf(stderr, "** failed to alloc %d marks\n", nim->num_ext);
     return -1;
@@ -4249,7 +4249,7 @@ convert_NBL_data(nifti_brick_list * NBL, int old_type, int new_type, int verify,
   nifti_datatype_sizes(new_type, &nbyper, NULL);
   NBLnew.bsize = nbvals * nbyper;
   NBLnew.nbricks = NBL->nbricks;
-  NBLnew.bricks = (void **)calloc(NBLnew.nbricks, sizeof(void *));
+  NBLnew.bricks = (void **)calloc((size_t)NBLnew.nbricks, (size_t)(sizeof(void *)));
   if (!NBLnew.bricks)
   {
     fprintf(stderr, "** cNBLd: failed to allocate %" PRId64 " void pointers\n", NBLnew.nbricks);
@@ -4348,7 +4348,7 @@ convert_raw_data(void ** retdata, void * olddata, int old_type, int new_type, in
 
   /* allocate new memory (calloc, in case of partial filling) */
   nifti_datatype_sizes(new_type, &nbyper, NULL); /* get nbyper */
-  newdata = calloc(nvox, nbyper);
+  newdata = calloc((size_t)nvox, (size_t)nbyper);
   if (!newdata)
   {
     fprintf(stderr, "** failed to alloc for %" PRId64 " %s elements\n", nvox, typestr);
@@ -7874,7 +7874,7 @@ nt_read_bricks(nt_opts * opts, char * fname, int64_t len, int64_t * list, nifti_
   /* now populate NBL (can be based only on len and nim) */
   NBL->nbricks = len;
   NBL->bsize = nim->nbyper * nim->nx * nim->ny * nim->nz;
-  NBL->bricks = (void **)calloc(NBL->nbricks, sizeof(void *));
+  NBL->bricks = (void **)calloc((size_t)(NBL->nbricks), (size_t)(sizeof(void *)));
   if (!NBL->bricks)
   {
     fprintf(stderr, "** NRB: failed to alloc %" PRId64 " pointers\n", NBL->nbricks);
@@ -7892,7 +7892,7 @@ nt_read_bricks(nt_opts * opts, char * fname, int64_t len, int64_t * list, nifti_
   /* now allocate the data pointers */
   for (c = 0; c < len; c++)
   {
-    NBL->bricks[c] = calloc(1, NBL->bsize);
+    NBL->bricks[c] = calloc((size_t)1, (size_t)(NBL->bsize));
     if (!NBL->bricks[c])
     {
       fprintf(stderr, "** NRB: failed to alloc brick %d of %" PRId64 " bytes\n", c, NBL->bsize);

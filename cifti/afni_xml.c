@@ -573,8 +573,8 @@ axml_add_attrs(afni_xml_t * ax, const char ** attr)
     return 0;
   }
 
-  ax->attrs.name = (char **)malloc(natr * sizeof(char *));
-  ax->attrs.value = (char **)malloc(natr * sizeof(char *));
+  ax->attrs.name = (char **)malloc((size_t)natr * sizeof(char *));
+  ax->attrs.value = (char **)malloc((size_t)natr * sizeof(char *));
 
   /* failure? */
   if (!ax->attrs.name || !ax->attrs.value)
@@ -835,7 +835,7 @@ reset_xml_buf(afni_xml_control * xd, char ** buf, int * bsize)
     fprintf(stderr, "++ update buf, %d to %d bytes\n", *bsize, xd->buf_size);
 
   *bsize = xd->buf_size;
-  *buf = (char *)safe_realloc(*buf, (*bsize + 1) * sizeof(char));
+  *buf = (char *)safe_realloc(*buf, (size_t)(*bsize + 1) * sizeof(char));
   if (!*buf)
   {
     fprintf(stderr, "** failed to alloc %d bytes of xml buf!\n", *bsize);
@@ -1020,7 +1020,7 @@ add_to_xroot_list(afni_xml_control * xd, afni_xml_t * newp)
   }
 
   xd->xroot->len++;
-  xd->xroot->xlist = (afni_xml_t **)safe_realloc(xd->xroot->xlist, xd->xroot->len * sizeof(afni_xml_t *));
+  xd->xroot->xlist = (afni_xml_t **)safe_realloc(xd->xroot->xlist, (size_t)xd->xroot->len * sizeof(afni_xml_t *));
   if (!xd->xroot->xlist)
   {
     fprintf(stderr, "** failed to alloc %d AXMLT pointers\n", xd->xroot->len);
@@ -1043,7 +1043,7 @@ add_to_xchild_list(afni_xml_t * parent, afni_xml_t * child)
   }
 
   parent->nchild++;
-  parent->xchild = (afni_xml_t **)safe_realloc(parent->xchild, parent->nchild * sizeof(afni_xml_t *));
+  parent->xchild = (afni_xml_t **)safe_realloc(parent->xchild, (size_t)parent->nchild * sizeof(afni_xml_t *));
   if (!parent->xchild)
   {
     fprintf(stderr, "** failed to alloc %d AXML pointers\n", parent->nchild);
@@ -1122,7 +1122,7 @@ strip_whitespace(const char * str, int slen)
   /* make sure we have local space */
   if (len > blen)
   { /* allocate a bigger buffer */
-    buf = (char *)safe_realloc(buf, (len + 1) * sizeof(char));
+    buf = (char *)safe_realloc(buf, (size_t)(len + 1) * sizeof(char));
     if (!buf)
     {
       fprintf(stderr, "** failed to alloc wspace buf of len %d\n", len + 1);
@@ -1202,7 +1202,7 @@ append_to_string(char ** ostr, int * olen, const char * istr, int ilen)
 
   newlen = *olen + ilen;
 
-  *ostr = (char *)safe_realloc(*ostr, newlen * sizeof(char));
+  *ostr = (char *)safe_realloc(*ostr, (size_t)newlen * sizeof(char));
   if (!*ostr)
   {
     fprintf(stderr, "** AX.A2S: failed to alloc %d chars\n", newlen);
