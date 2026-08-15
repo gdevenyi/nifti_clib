@@ -452,12 +452,12 @@ main(int argc, const char * argv[])
   nifti_datatype_test(DT_COMPLEX128, "COMPLEX128");
   nifti_datatype_test(DT_COMPLEX256, "COMPLEX256");
   nifti_datatype_test(DT_RGB24, "RGB24");
-#define nifti_is_inttype_test(constant, rval)                          \
-  do                                                                   \
-  {                                                                    \
-    char buf[64];                                                      \
-    snprintf(buf, sizeof(buf), "nifti_datatype_string %d", constant);  \
-    PrintTest(buf, nifti_is_inttype(constant) != rval, true, &Errors); \
+#define nifti_is_inttype_test(constant, rval)                            \
+  do                                                                     \
+  {                                                                      \
+    char buf[64];                                                        \
+    snprintf(buf, sizeof(buf), "nifti_datatype_string %d", constant);    \
+    PrintTest(buf, nifti_is_inttype(constant) != (rval), true, &Errors); \
   } while (0)
   nifti_is_inttype_test(DT_UNKNOWN, 0);
   nifti_is_inttype_test(DT_BINARY, 0);
@@ -562,15 +562,15 @@ main(int argc, const char * argv[])
   nifti_orientation_string_test(NIFTI_I2S, "Inferior-to-Superior");
   nifti_orientation_string_test(NIFTI_S2I, "Superior-to-Inferior");
 
-#define nifti_datatype_sizes_test(constant, Nbyper, Swapsize)                \
-  do                                                                         \
-  {                                                                          \
-    int  nbyper;                                                             \
-    int  swapsize;                                                           \
-    char buf[64];                                                            \
-    snprintf(buf, sizeof(buf), "nifti_datatype_sizes_test %d", constant);    \
-    nifti_datatype_sizes(constant, &nbyper, &swapsize);                      \
-    PrintTest(buf, nbyper != Nbyper || swapsize != Swapsize, true, &Errors); \
+#define nifti_datatype_sizes_test(constant, Nbyper, Swapsize)                    \
+  do                                                                             \
+  {                                                                              \
+    int  nbyper;                                                                 \
+    int  swapsize;                                                               \
+    char buf[64];                                                                \
+    snprintf(buf, sizeof(buf), "nifti_datatype_sizes_test %d", constant);        \
+    nifti_datatype_sizes(constant, &nbyper, &swapsize);                          \
+    PrintTest(buf, nbyper != (Nbyper) || swapsize != (Swapsize), true, &Errors); \
   } while (0)
 
   nifti_datatype_sizes_test(DT_UINT8, 1, 0);

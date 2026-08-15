@@ -112,17 +112,17 @@ typedef struct
  * and nifti_image structure fields (actions disp, diff, mod)
  *----------------------------------------------------------------------*/
 
-#define NT_FIELD_NAME_LEN   20     /* more than length of longest name */
-#define NT_HDR1_NUM_FIELDS  43     /* in the nifti_1_header struct     */
-#define NT_HDR2_NUM_FIELDS  37     /* in the nifti_2_header struct     */
-#define NT_ANA_NUM_FIELDS   47     /* in the  nifti_analyze75 struct   */
-#define NT_NIM_NUM_FIELDS   63     /* in the nifti_image struct        */
-#define NT_HDR_TIME_NFIELDS 8      /* num slice timing fields in hdr   */
-#define NT_NIM_TIME_NFIELDS 11     /* num slice timing fields in nim   */
-#define NT_DT_STRING        -0xfff /* some strange number to abuse...  */
-#define NT_DT_POINTER       -0xfef /* some strange number to abuse...  */
-#define NT_DT_CHAR_PTR      -0xfee /* another...                       */
-#define NT_DT_EXT_PTR       -0xfed /* and another...                   */
+#define NT_FIELD_NAME_LEN   20       /* more than length of longest name */
+#define NT_HDR1_NUM_FIELDS  43       /* in the nifti_1_header struct     */
+#define NT_HDR2_NUM_FIELDS  37       /* in the nifti_2_header struct     */
+#define NT_ANA_NUM_FIELDS   47       /* in the  nifti_analyze75 struct   */
+#define NT_NIM_NUM_FIELDS   63       /* in the nifti_image struct        */
+#define NT_HDR_TIME_NFIELDS 8        /* num slice timing fields in hdr   */
+#define NT_NIM_TIME_NFIELDS 11       /* num slice timing fields in nim   */
+#define NT_DT_STRING        (-0xfff) /* some strange number to abuse...  */
+#define NT_DT_POINTER       (-0xfef) /* some strange number to abuse...  */
+#define NT_DT_CHAR_PTR      (-0xfee) /* another...                       */
+#define NT_DT_EXT_PTR       (-0xfed) /* and another...                   */
 
 typedef struct
 {
@@ -135,11 +135,11 @@ typedef struct
 
 /* call fill_field() for a single type, name and number of elements */
 /* nstr is the base struct, and fldp is a field pointer */
-#define NT_FILL(nstr, fldp, type, name, num, rv)                   \
-  do                                                               \
-  {                                                                \
-    rv = fill_field(fldp, type, offsetof(nstr, name), num, #name); \
-    fldp++;                                                        \
+#define NT_FILL(nstr, fldp, type, name, num, rv)                     \
+  do                                                                 \
+  {                                                                  \
+    (rv) = fill_field(fldp, type, offsetof(nstr, name), num, #name); \
+    (fldp)++;                                                        \
   } while (0)
 
 #define NT_MAKE_IM_NAME "MAKE_IM"
@@ -152,24 +152,33 @@ typedef struct
 /* dtype, dptr : destination type and pointer   */
 /* stype, sptr : source type and pointer        */
 /* nvals       : number of values to copy       */
+/* dtype and stype are type names, not expressions.  clang-tidy cannot tell
+   the difference and asks for parentheses that would turn the declarations
+   below into cast expressions, so the check is suppressed here.           */
+// NOLINTBEGIN(bugprone-macro-parentheses)
 #define NT_DCONVERT_NO_CHECKS(dptr, dtype, sptr, stype, nvals) \
   do                                                           \
   {                                                            \
     dtype * pd = dptr;                                         \
     stype * ps = sptr;                                         \
     int64_t index;                                             \
-    for (index = 0; index < nvals; index++)                    \
+    for (index = 0; index < (nvals); index++)                  \
     {                                                          \
       *pd = (dtype) * ps;                                      \
       pd++;                                                    \
       ps++;                                                    \
     }                                                          \
   } while (0)
+// NOLINTEND(bugprone-macro-parentheses)
 
 /* --------------------------------------------- */
 /* copy from src to dest, changing type enroute  */
 /* (like NT_DCONVERT_NO_CHECKS, but WITH checks) */
 /* fail         : (returned) conversion failures */
+/* dtype and stype are type names, not expressions.  clang-tidy cannot tell
+   the difference and asks for parentheses that would turn the declarations
+   below into cast expressions, so the check is suppressed here.           */
+// NOLINTBEGIN(bugprone-macro-parentheses)
 #define NT_DCONVERT_W_CHECKS(dptr, dtype, sptr, stype, nvals, failure) \
   do                                                                   \
   {                                                                    \
@@ -177,17 +186,18 @@ typedef struct
     stype * ps = sptr;                                                 \
     int64_t index;                                                     \
     /* init bounds with first */                                       \
-    failure = 0;                                                       \
-    for (index = 0; index < nvals; index++)                            \
+    (failure) = 0;                                                     \
+    for (index = 0; index < (nvals); index++)                          \
     {                                                                  \
       *pd = (dtype) * ps;                                              \
       /* fail when we cannot invert */                                 \
-      if (!failure && *ps != (stype) * pd)                             \
-        failure = 1;                                                   \
+      if (!(failure) && *ps != (stype) * pd)                           \
+        (failure) = 1;                                                 \
       pd++;                                                            \
       ps++;                                                            \
     }                                                                  \
   } while (0)
+// NOLINTEND(bugprone-macro-parentheses)
 
 
 /* ================================================================= */
@@ -195,110 +205,110 @@ typedef struct
 /* (macros allow them to apply to either mat44 or dmat44)            */
 
 /* fill MAT44 with MAT33 fields, then pad with 0.0 and a 1.0 at 3,3  */
-#define NT_MAT33_TO_MAT44(m33, m44)                \
-  do                                               \
-  {                                                \
-    m44.m[0][0] = m33.m[0][0];                     \
-    m44.m[0][1] = m33.m[0][1];                     \
-    m44.m[0][2] = m33.m[0][2];                     \
-    m44.m[1][0] = m33.m[1][0];                     \
-    m44.m[1][1] = m33.m[1][1];                     \
-    m44.m[1][2] = m33.m[1][2];                     \
-    m44.m[2][0] = m33.m[2][0];                     \
-    m44.m[2][1] = m33.m[2][1];                     \
-    m44.m[2][2] = m33.m[2][2];                     \
-    /* and fill out the 4x4 mat */                 \
-    m44.m[0][3] = m44.m[1][3] = m44.m[2][3] = 0.0; \
-    m44.m[3][0] = m44.m[3][1] = m44.m[3][2] = 0.0; \
-    m44.m[3][3] = 1.0;                             \
+#define NT_MAT33_TO_MAT44(m33, m44)                      \
+  do                                                     \
+  {                                                      \
+    (m44).m[0][0] = (m33).m[0][0];                       \
+    (m44).m[0][1] = (m33).m[0][1];                       \
+    (m44).m[0][2] = (m33).m[0][2];                       \
+    (m44).m[1][0] = (m33).m[1][0];                       \
+    (m44).m[1][1] = (m33).m[1][1];                       \
+    (m44).m[1][2] = (m33).m[1][2];                       \
+    (m44).m[2][0] = (m33).m[2][0];                       \
+    (m44).m[2][1] = (m33).m[2][1];                       \
+    (m44).m[2][2] = (m33).m[2][2];                       \
+    /* and fill out the 4x4 mat */                       \
+    (m44).m[0][3] = (m44).m[1][3] = (m44).m[2][3] = 0.0; \
+    (m44).m[3][0] = (m44).m[3][1] = (m44).m[3][2] = 0.0; \
+    (m44).m[3][3] = 1.0;                                 \
   } while (0)
 
 /* fill MAT33 with initial subset of MAT44 fields */
 #define NT_MAT44_TO_MAT33(m44, m33) \
   do                                \
   {                                 \
-    m33.m[0][0] = m44.m[0][0];      \
-    m33.m[0][1] = m44.m[0][1];      \
-    m33.m[0][2] = m44.m[0][2];      \
-    m33.m[1][0] = m44.m[1][0];      \
-    m33.m[1][1] = m44.m[1][1];      \
-    m33.m[1][2] = m44.m[1][2];      \
-    m33.m[2][0] = m44.m[2][0];      \
-    m33.m[2][1] = m44.m[2][1];      \
-    m33.m[2][2] = m44.m[2][2];      \
+    (m33).m[0][0] = (m44).m[0][0];  \
+    (m33).m[0][1] = (m44).m[0][1];  \
+    (m33).m[0][2] = (m44).m[0][2];  \
+    (m33).m[1][0] = (m44).m[1][0];  \
+    (m33).m[1][1] = (m44).m[1][1];  \
+    (m33).m[1][2] = (m44).m[1][2];  \
+    (m33).m[2][0] = (m44).m[2][0];  \
+    (m33).m[2][1] = (m44).m[2][1];  \
+    (m33).m[2][2] = (m44).m[2][2];  \
   } while (0)
 
 /* subtract 2 mat44 matrices */
-#define NT_MAT44_SUBTRACT(mout, min0, min1)     \
-  do                                            \
-  {                                             \
-    mout.m[0][0] = min0.m[0][0] - min1.m[0][0]; \
-    mout.m[0][1] = min0.m[0][1] - min1.m[0][1]; \
-    mout.m[0][2] = min0.m[0][2] - min1.m[0][2]; \
-    mout.m[0][3] = min0.m[0][3] - min1.m[0][3]; \
-    mout.m[1][0] = min0.m[1][0] - min1.m[1][0]; \
-    mout.m[1][1] = min0.m[1][1] - min1.m[1][1]; \
-    mout.m[1][2] = min0.m[1][2] - min1.m[1][2]; \
-    mout.m[1][3] = min0.m[1][3] - min1.m[1][3]; \
-    mout.m[2][0] = min0.m[2][0] - min1.m[2][0]; \
-    mout.m[2][1] = min0.m[2][1] - min1.m[2][1]; \
-    mout.m[2][2] = min0.m[2][2] - min1.m[2][2]; \
-    mout.m[2][3] = min0.m[2][3] - min1.m[2][3]; \
-    mout.m[3][0] = min0.m[3][0] - min1.m[3][0]; \
-    mout.m[3][1] = min0.m[3][1] - min1.m[3][1]; \
-    mout.m[3][2] = min0.m[3][2] - min1.m[3][2]; \
-    mout.m[3][3] = min0.m[3][3] - min1.m[3][3]; \
+#define NT_MAT44_SUBTRACT(mout, min0, min1)           \
+  do                                                  \
+  {                                                   \
+    (mout).m[0][0] = (min0).m[0][0] - (min1).m[0][0]; \
+    (mout).m[0][1] = (min0).m[0][1] - (min1).m[0][1]; \
+    (mout).m[0][2] = (min0).m[0][2] - (min1).m[0][2]; \
+    (mout).m[0][3] = (min0).m[0][3] - (min1).m[0][3]; \
+    (mout).m[1][0] = (min0).m[1][0] - (min1).m[1][0]; \
+    (mout).m[1][1] = (min0).m[1][1] - (min1).m[1][1]; \
+    (mout).m[1][2] = (min0).m[1][2] - (min1).m[1][2]; \
+    (mout).m[1][3] = (min0).m[1][3] - (min1).m[1][3]; \
+    (mout).m[2][0] = (min0).m[2][0] - (min1).m[2][0]; \
+    (mout).m[2][1] = (min0).m[2][1] - (min1).m[2][1]; \
+    (mout).m[2][2] = (min0).m[2][2] - (min1).m[2][2]; \
+    (mout).m[2][3] = (min0).m[2][3] - (min1).m[2][3]; \
+    (mout).m[3][0] = (min0).m[3][0] - (min1).m[3][0]; \
+    (mout).m[3][1] = (min0).m[3][1] - (min1).m[3][1]; \
+    (mout).m[3][2] = (min0).m[3][2] - (min1).m[3][2]; \
+    (mout).m[3][3] = (min0).m[3][3] - (min1).m[3][3]; \
   } while (0)
 
 /* subtract 2 mat33 matrices */
-#define NT_MAT33_SUBTRACT(mout, min0, min1)     \
-  do                                            \
-  {                                             \
-    mout.m[0][0] = min0.m[0][0] - min1.m[0][0]; \
-    mout.m[0][1] = min0.m[0][1] - min1.m[0][1]; \
-    mout.m[0][2] = min0.m[0][2] - min1.m[0][2]; \
-    mout.m[1][0] = min0.m[1][0] - min1.m[1][0]; \
-    mout.m[1][1] = min0.m[1][1] - min1.m[1][1]; \
-    mout.m[1][2] = min0.m[1][2] - min1.m[1][2]; \
-    mout.m[2][0] = min0.m[2][0] - min1.m[2][0]; \
-    mout.m[2][1] = min0.m[2][1] - min1.m[2][1]; \
-    mout.m[2][2] = min0.m[2][2] - min1.m[2][2]; \
+#define NT_MAT33_SUBTRACT(mout, min0, min1)           \
+  do                                                  \
+  {                                                   \
+    (mout).m[0][0] = (min0).m[0][0] - (min1).m[0][0]; \
+    (mout).m[0][1] = (min0).m[0][1] - (min1).m[0][1]; \
+    (mout).m[0][2] = (min0).m[0][2] - (min1).m[0][2]; \
+    (mout).m[1][0] = (min0).m[1][0] - (min1).m[1][0]; \
+    (mout).m[1][1] = (min0).m[1][1] - (min1).m[1][1]; \
+    (mout).m[1][2] = (min0).m[1][2] - (min1).m[1][2]; \
+    (mout).m[2][0] = (min0).m[2][0] - (min1).m[2][0]; \
+    (mout).m[2][1] = (min0).m[2][1] - (min1).m[2][1]; \
+    (mout).m[2][2] = (min0).m[2][2] - (min1).m[2][2]; \
   } while (0)
 
 /* fill with identity matrix */
 #define NT_MAT44_SET_TO_IDENTITY(M) \
   do                                \
   {                                 \
-    M.m[0][0] = 1.0;                \
-    M.m[0][1] = 0.0;                \
-    M.m[0][2] = 0.0;                \
-    M.m[0][3] = 0.0;                \
-    M.m[1][0] = 0.0;                \
-    M.m[1][1] = 1.0;                \
-    M.m[1][2] = 0.0;                \
-    M.m[1][3] = 0.0;                \
-    M.m[2][0] = 0.0;                \
-    M.m[2][1] = 0.0;                \
-    M.m[2][2] = 1.0;                \
-    M.m[2][3] = 0.0;                \
-    M.m[3][0] = 0.0;                \
-    M.m[3][1] = 0.0;                \
-    M.m[3][2] = 0.0;                \
-    M.m[3][3] = 1.0;                \
+    (M).m[0][0] = 1.0;              \
+    (M).m[0][1] = 0.0;              \
+    (M).m[0][2] = 0.0;              \
+    (M).m[0][3] = 0.0;              \
+    (M).m[1][0] = 0.0;              \
+    (M).m[1][1] = 1.0;              \
+    (M).m[1][2] = 0.0;              \
+    (M).m[1][3] = 0.0;              \
+    (M).m[2][0] = 0.0;              \
+    (M).m[2][1] = 0.0;              \
+    (M).m[2][2] = 1.0;              \
+    (M).m[2][3] = 0.0;              \
+    (M).m[3][0] = 0.0;              \
+    (M).m[3][1] = 0.0;              \
+    (M).m[3][2] = 0.0;              \
+    (M).m[3][3] = 1.0;              \
   } while (0)
 
 #define NT_MAT33_SET_TO_IDENTITY(M) \
   do                                \
   {                                 \
-    M.m[0][0] = 1.0;                \
-    M.m[0][1] = 0.0;                \
-    M.m[0][2] = 0.0;                \
-    M.m[1][0] = 0.0;                \
-    M.m[1][1] = 1.0;                \
-    M.m[1][2] = 0.0;                \
-    M.m[2][0] = 0.0;                \
-    M.m[2][1] = 0.0;                \
-    M.m[2][2] = 1.0;                \
+    (M).m[0][0] = 1.0;              \
+    (M).m[0][1] = 0.0;              \
+    (M).m[0][2] = 0.0;              \
+    (M).m[1][0] = 0.0;              \
+    (M).m[1][1] = 1.0;              \
+    (M).m[1][2] = 0.0;              \
+    (M).m[2][0] = 0.0;              \
+    (M).m[2][1] = 0.0;              \
+    (M).m[2][2] = 1.0;              \
   } while (0)
 
 

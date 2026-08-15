@@ -136,7 +136,7 @@ extern "C"
 #  define FSL_TYPE_MINC_GZ       104
   /* @} */
 
-#  define FSL_RADIOLOGICAL -1
+#  define FSL_RADIOLOGICAL (-1)
 #  define FSL_NEUROLOGICAL 1
 
 

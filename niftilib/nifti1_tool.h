@@ -79,14 +79,14 @@ typedef struct
  * and nifti_image structure fields (actions disp, diff, mod)
  *----------------------------------------------------------------------*/
 
-#define NT_FIELD_NAME_LEN 20     /* more than length of longest name */
-#define NT_HDR_NUM_FIELDS 43     /* in the nifti_1_header struct     */
-#define NT_ANA_NUM_FIELDS 47     /* in the  nifti_analyze75 struct   */
-#define NT_NIM_NUM_FIELDS 63     /* in the nifti_image struct        */
-#define NT_DT_STRING      -0xfff /* some strange number to abuse...  */
-#define NT_DT_POINTER     -0xfef /* some strange number to abuse...  */
-#define NT_DT_CHAR_PTR    -0xfee /* another...                       */
-#define NT_DT_EXT_PTR     -0xfed /* and another...                   */
+#define NT_FIELD_NAME_LEN 20       /* more than length of longest name */
+#define NT_HDR_NUM_FIELDS 43       /* in the nifti_1_header struct     */
+#define NT_ANA_NUM_FIELDS 47       /* in the  nifti_analyze75 struct   */
+#define NT_NIM_NUM_FIELDS 63       /* in the nifti_image struct        */
+#define NT_DT_STRING      (-0xfff) /* some strange number to abuse...  */
+#define NT_DT_POINTER     (-0xfef) /* some strange number to abuse...  */
+#define NT_DT_CHAR_PTR    (-0xfee) /* another...                       */
+#define NT_DT_EXT_PTR     (-0xfed) /* and another...                   */
 
 typedef struct
 {
@@ -99,11 +99,11 @@ typedef struct
 
 /* call fill_field() for a single type, name and number of elements */
 /* nstr is the base struct, and fldp is a field pointer */
-#define NT_FILL(nstr, fldp, type, name, num, rv)                   \
-  do                                                               \
-  {                                                                \
-    rv = fill_field(fldp, type, offsetof(nstr, name), num, #name); \
-    fldp++;                                                        \
+#define NT_FILL(nstr, fldp, type, name, num, rv)                     \
+  do                                                                 \
+  {                                                                  \
+    (rv) = fill_field(fldp, type, offsetof(nstr, name), num, #name); \
+    (fldp)++;                                                        \
   } while (0)
 
 #define NT_MAKE_IM_NAME "MAKE_IM"
